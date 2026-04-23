@@ -7,12 +7,18 @@ import {
 
 describe('getWeekStart', () => {
   it('returns Monday for a Wednesday', () => {
-    const wed = new Date('2026-04-22')
-    expect(getWeekStart(wed).toISOString().slice(0,10)).toBe('2026-04-20')
+    // Use Date constructor with year/month/day to get LOCAL date (avoids UTC midnight parse)
+    const wed = new Date(2026, 3, 22) // April 22, 2026 local midnight
+    const result = getWeekStart(wed)
+    expect(result.getFullYear()).toBe(2026)
+    expect(result.getMonth()).toBe(3) // April
+    expect(result.getDate()).toBe(20) // Monday Apr 20
   })
   it('returns same day for Monday', () => {
-    const mon = new Date('2026-04-20')
-    expect(getWeekStart(mon).toISOString().slice(0,10)).toBe('2026-04-20')
+    const mon = new Date(2026, 3, 20)
+    const result = getWeekStart(mon)
+    expect(result.getDate()).toBe(20)
+    expect(result.getHours()).toBe(0)
   })
 })
 
