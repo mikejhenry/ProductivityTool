@@ -110,7 +110,12 @@ export function TimetableGrid({ weekStart, blocks, tasks, onCreate, onUpdate, on
     <div className="flex flex-1 flex-col overflow-hidden">
       {/* Jump to now button */}
       <div className="flex items-center justify-end border-b border-gray-200 px-3 py-1 dark:border-slate-700">
-        <button className="btn-ghost text-xs" onClick={jumpToNow}>Jump to now</button>
+        <button
+          className="rounded px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700"
+          onClick={jumpToNow}
+        >
+          Jump to now
+        </button>
       </div>
 
       <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
