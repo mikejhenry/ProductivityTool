@@ -6,7 +6,8 @@
       "Bash(npx create-vite@latest . --template react-ts)",
       "Bash(npx vitest *)",
       "Bash(node -e \"const d = new Date\\('2026-04-20'\\); console.log\\('ISO:', d.toISOString\\(\\)\\); console.log\\('Day:', d.getDay\\(\\)\\); console.log\\('Local:', d.toLocaleDateString\\('en-US', {month: 'short', day: 'numeric'}\\)\\)\")",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "Bash(npx tsc *)"
     ]
   }
 }

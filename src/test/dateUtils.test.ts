@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
-  getWeekStart, getWeekEnd, formatWeekRange,
-  minutesFromMidnight, blockTopPercent, blockHeightPercent,
+  getWeekStart, formatWeekRange,
+  minutesFromMidnight, blockHeightPercent,
   shiftBlockByDays,
 } from '../lib/dateUtils'
 
