@@ -55,6 +55,7 @@ A hybrid task manager + weekly timetable that helps users plan their time realis
 | `/signup` | Signup | No |
 | `/reset-password` | ResetPassword | No |
 | `/app` | Main app (timetable + tasks) | Yes |
+| `/app/today` | Daily dashboard | Yes |
 | `/app/settings` | Settings | Yes |
 
 ---
@@ -150,15 +151,20 @@ src/
 │   │   ├── TaskList.tsx         # Sidebar task list
 │   │   ├── TaskItem.tsx         # Draggable task → drop on grid creates block
 │   │   └── TaskModal.tsx        # Create/edit task
-│   └── summary/
-│       └── WeeklySummary.tsx    # Stat row: planned/completed/moved/skipped/rate
+│   ├── summary/
+│   │   └── WeeklySummary.tsx    # Stat row: planned/completed/moved/skipped/rate
+│   └── dashboard/
+│       ├── DailyDashboard.tsx   # Today tab: timeline + task checklist + what's next
+│       ├── TodayTimeline.tsx    # Chronological block cards for today
+│       └── TaskChecklist.tsx    # Today's tasks with checkbox interactions
 │
 ├── pages/
 │   ├── Login.tsx
 │   ├── Signup.tsx
 │   ├── ResetPassword.tsx
 │   ├── Settings.tsx             # Email management, theme toggle
-│   └── AppPage.tsx              # Protected: Navbar + grid + task sidebar
+│   ├── AppPage.tsx              # Protected: Navbar + grid + task sidebar
+│   └── TodayPage.tsx            # Protected: Daily dashboard
 │
 └── types/
     └── index.ts                 # Task, TimeBlock, Profile TypeScript interfaces
@@ -202,7 +208,7 @@ src/
 - *"Copy from previous week"* button always visible in navbar
 - Opens a **week picker modal** listing the last 12 weeks with date range + block count per week
 - User selects a week → sees a preview of blocks to be copied → confirms
-- Copied blocks: status reset to `"planned"`, timestamps shifted +7n days to target week
+- Copied blocks: status reset to `"planned"`, timestamps shifted forward by the exact number of days between the source week's Monday and the target week's Monday
 - Existing blocks in the target week are preserved (no overwrite)
 
 ---
@@ -217,7 +223,7 @@ src/
 
 ### Suggested blocks
 - Daily tasks with `preferred_time` appear as faint suggestion overlays in the timetable on their repeat days
-- Clicking a suggestion promotes it to a real block
+- Clicking a suggestion auto-creates a real block (1-hour default duration starting at `preferred_time`); `BlockModal` opens immediately so the user can adjust title, duration, type, and reminders before saving
 
 ---
 
@@ -294,7 +300,40 @@ Available for any week — current or past — scoped to the visible week's bloc
 
 ---
 
-## 12. Version Control
+## 12. Daily Dashboard
+
+A focused "today" view accessible via a **Today** tab in the navbar (alongside the Week view). Serves as the daily entry point — users can see at a glance what's scheduled and what still needs attention without scanning the full week grid.
+
+### Layout
+Two panels side by side (stacked on mobile):
+
+**Left — Today's Timeline:**
+- A condensed single-day timeline showing today's time blocks in chronological order
+- Blocks are shown as cards with title, time range, type badge (soft/hard), and status
+- Current time indicator marks "now" in the list
+- Blocks in the past are visually dimmed; upcoming blocks are full opacity
+- Each block card has a quick-action menu: mark complete / move / skip
+
+**Right — Task Checklist:**
+- All `daily` tasks scheduled for today (based on `repeat_days`) listed as checkboxes
+- All `flexible` tasks the user has manually linked to a block today
+- Unscheduled flexible tasks the user wants to tackle today (user can pin flexible tasks to today from the task list)
+- Ticking a task marks it `completed`; unchecking reverts to `planned`
+
+### "What's next" strip
+- At the top of the page: a single highlighted card showing the next upcoming block within the next 2 hours, or *"No blocks scheduled in the next 2 hours"* if clear
+- Gives users an immediate answer to "what should I be doing now?"
+
+### Route
+`/app/today` — protected, shown by default when the current date is today. Navigating to a past day in the week view does not redirect here.
+
+### Data
+- Reuses data already fetched by `useTimeBlocks` for the current week — no extra query needed
+- Filters to today's date range on the client
+
+---
+
+## 13. Version Control
 
 - Git repository initialised at project root
 - `.gitignore` includes `node_modules`, `.env`, `.supabase`, `.superpowers/`
@@ -317,7 +356,8 @@ cp .env.example .env
 # Fill in VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY from your Supabase project
 
 # 4. Apply database schema
-# Run the SQL in docs/schema.sql in your Supabase SQL editor
+# Copy the SQL from Section 4 of docs/superpowers/specs/2026-04-22-productivity-tool-design.md
+# and run it in your Supabase SQL editor
 
 # 5. Configure Supabase
 # - Disable email confirmation: Auth > Settings > Email Confirmations > OFF
