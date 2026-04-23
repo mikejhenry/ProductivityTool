@@ -2,9 +2,16 @@ import { TimeBlock } from '../../types'
 
 const STATUS_COLOR: Record<string, string> = {
   planned: 'border-indigo-400',
-  completed: 'border-green-400 opacity-60',
-  moved: 'border-amber-400 opacity-50',
-  skipped: 'border-gray-300 opacity-40',
+  completed: 'border-green-400',
+  moved: 'border-amber-400',
+  skipped: 'border-gray-300',
+}
+
+const STATUS_OPACITY: Record<string, string> = {
+  planned: '',
+  completed: 'opacity-60',
+  moved: 'opacity-50',
+  skipped: 'opacity-40',
 }
 
 interface Props {
@@ -40,7 +47,7 @@ export function TodayTimeline({ blocks, onStatusChange }: Props) {
           return (
             <div
               key={block.id}
-              className={`flex items-start gap-3 rounded-lg border-l-4 bg-white p-3 shadow-sm dark:bg-slate-800 ${STATUS_COLOR[block.status]} ${isPast && block.status === 'planned' ? 'opacity-60' : ''}`}
+              className={`flex items-start gap-3 rounded-lg border-l-4 bg-white p-3 shadow-sm dark:bg-slate-800 ${STATUS_COLOR[block.status]} ${STATUS_OPACITY[block.status] || (isPast && block.status === 'planned' ? 'opacity-60' : '')}`}
             >
               <div className="flex-1">
                 <p className={`font-medium text-gray-900 dark:text-white ${block.status === 'completed' ? 'line-through' : ''}`}>
