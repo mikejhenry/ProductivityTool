@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Navbar } from '../components/layout/Navbar'
+import { NotificationBanner } from '../components/layout/NotificationBanner'
 import { TimetableGrid } from '../components/timetable/TimetableGrid'
 import { TaskList } from '../components/tasks/TaskList'
 import { WeeklySummary } from '../components/summary/WeeklySummary'
@@ -7,7 +8,6 @@ import { WeekPickerModal } from '../components/timetable/WeekPickerModal'
 import { useWeek } from '../contexts/WeekContext'
 import { useTimeBlocks } from '../hooks/useTimeBlocks'
 import { useTasks } from '../hooks/useTasks'
-import { useNotifications } from '../hooks/useNotifications'
 import { TimeBlock } from '../types'
 import { getWeekStart, shiftBlockByDays } from '../lib/dateUtils'
 
@@ -15,7 +15,6 @@ export default function AppPage() {
   const { weekStart } = useWeek()
   const { blocks, createBlock, updateBlock, deleteBlock } = useTimeBlocks(weekStart)
   const { tasks, createTask, updateTask, deleteTask } = useTasks()
-  useNotifications(blocks)
 
   const [showWeekPicker, setShowWeekPicker] = useState(false)
 
@@ -43,6 +42,7 @@ export default function AppPage() {
   return (
     <div className="flex h-screen flex-col bg-gray-50 dark:bg-slate-900">
       <Navbar onCopyWeek={() => setShowWeekPicker(true)} />
+      <NotificationBanner blocks={blocks} />
       <WeeklySummary blocks={blocks} />
       <div className="flex flex-1 overflow-hidden">
         <TimetableGrid
