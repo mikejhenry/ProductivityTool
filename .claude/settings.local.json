@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bash \"C:/Users/johns/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.7/skills/brainstorming/scripts/start-server.sh\" --project-dir \"C:/Users/johns/Desktop/productivity tool\")",
+      "Bash(echo \"Exit: $?\")",
+      "Bash(npx create-vite@latest . --template react-ts)"
+    ]
+  }
+}
