@@ -12,7 +12,7 @@ export function useNotifications(blocks: TimeBlock[]) {
     initialized.current = true
 
     const stored = localStorage.getItem('notif-permission')
-    if (stored === 'denied') return
+    if (stored === 'denied' || stored === 'dismissed') return
 
     navigator.serviceWorker.register('/sw.js').then(reg => {
       swReg = reg
