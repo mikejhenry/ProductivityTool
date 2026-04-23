@@ -79,10 +79,13 @@ export function DayColumn({ dayIndex, weekStart, blocks, dailyTasks, onEdit, onC
 
           const topPct = isOvernightEnd ? 0 : blockTopPercent(block.start_time)
           const rawHeight = blockHeightPercent(block.start_time, block.end_time)
+          const minutesToEnd = isOvernightEnd
+            ? new Date(block.end_time).getHours() * 60 + new Date(block.end_time).getMinutes()
+            : 0
           const heightPct = isOvernightStart
             ? 100 - topPct
             : isOvernightEnd
-            ? blockTopPercent(block.end_time)
+            ? (minutesToEnd / 1440) * 100
             : rawHeight
 
           return (

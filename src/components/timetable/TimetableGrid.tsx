@@ -41,7 +41,7 @@ export function TimetableGrid({ weekStart, blocks, tasks, onCreate, onUpdate, on
 
   function handleDragEnd(e: DragEndEvent) {
     const { active, over } = e
-    if (!over || !active.data.current) return
+    if (!over || !over.data.current || !active.data.current) return
 
     // Moving an existing block
     if (active.data.current.block) {
