@@ -3,7 +3,10 @@
     "allow": [
       "Bash(bash \"C:/Users/johns/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.7/skills/brainstorming/scripts/start-server.sh\" --project-dir \"C:/Users/johns/Desktop/productivity tool\")",
       "Bash(echo \"Exit: $?\")",
-      "Bash(npx create-vite@latest . --template react-ts)"
+      "Bash(npx create-vite@latest . --template react-ts)",
+      "Bash(npx vitest *)",
+      "Bash(node -e \"const d = new Date\\('2026-04-20'\\); console.log\\('ISO:', d.toISOString\\(\\)\\); console.log\\('Day:', d.getDay\\(\\)\\); console.log\\('Local:', d.toLocaleDateString\\('en-US', {month: 'short', day: 'numeric'}\\)\\)\")",
+      "Bash(node -e ' *)"
     ]
   }
 }
