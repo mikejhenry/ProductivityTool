@@ -4,7 +4,11 @@ import { useProfile } from '../../hooks/useProfile'
 import { useWeek } from '../../contexts/WeekContext'
 import { formatWeekRange, addDays } from '../../lib/dateUtils'
 
-export function Navbar() {
+interface NavbarProps {
+  onCopyWeek?: () => void
+}
+
+export function Navbar({ onCopyWeek }: NavbarProps) {
   const { signOut } = useAuth()
   const { profile, updateTheme } = useProfile()
   const { weekStart, setWeekStart } = useWeek()
@@ -32,6 +36,12 @@ export function Navbar() {
           <button className="btn-ghost" onClick={() => setWeekStart(addDays(weekStart, -7))}>‹</button>
           <span className="text-sm text-gray-700 dark:text-gray-300">{formatWeekRange(weekStart)}</span>
           <button className="btn-ghost" onClick={() => setWeekStart(addDays(weekStart, 7))}>›</button>
+          <button
+            onClick={() => onCopyWeek?.()}
+            className="rounded px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700"
+          >
+            Copy week
+          </button>
         </div>
       )}
 
