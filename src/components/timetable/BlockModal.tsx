@@ -9,6 +9,19 @@ interface Props {
   onClose: () => void
 }
 
+function toTimeInput(iso?: string) {
+  if (!iso) return ''
+  const d = new Date(iso)
+  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+}
+
+function applyTime(iso: string, timeStr: string): string {
+  const d = new Date(iso)
+  const [h, m] = timeStr.split(':').map(Number)
+  d.setHours(h, m, 0, 0)
+  return d.toISOString()
+}
+
 export function BlockModal({ initial, tasks, onSave, onDelete, onClose }: Props) {
   const [title, setTitle] = useState(initial?.title ?? '')
   const [type, setType] = useState<'soft' | 'hard'>(initial?.type ?? 'soft')
@@ -16,6 +29,8 @@ export function BlockModal({ initial, tasks, onSave, onDelete, onClose }: Props)
   const [taskId, setTaskId] = useState<string>(initial?.task_id ?? '')
   const [reminders, setReminders] = useState<number[]>(initial?.reminder_minutes ?? [])
   const [reminderInput, setReminderInput] = useState('')
+  const [startTime, setStartTime] = useState(toTimeInput(initial?.start_time))
+  const [endTime, setEndTime] = useState(toTimeInput(initial?.end_time))
 
   function addReminder() {
     const val = parseInt(reminderInput)
@@ -26,14 +41,14 @@ export function BlockModal({ initial, tasks, onSave, onDelete, onClose }: Props)
   }
 
   function handleSave() {
-    if (!title.trim() || !initial?.start_time || !initial?.end_time) return
+    if (!title.trim() || !initial?.start_time || !initial?.end_time || !startTime || !endTime) return
     onSave({
       title: title.trim(),
       type,
       color,
       task_id: taskId || null,
-      start_time: initial.start_time,
-      end_time: initial.end_time,
+      start_time: applyTime(initial.start_time, startTime),
+      end_time: applyTime(initial.end_time, endTime),
       status: initial?.status ?? 'planned',
       reminder_minutes: reminders,
     })
@@ -54,6 +69,26 @@ export function BlockModal({ initial, tasks, onSave, onDelete, onClose }: Props)
             onChange={e => setTitle(e.target.value)}
             autoFocus
           />
+          <div className="flex gap-2">
+            <div className="flex flex-1 flex-col gap-1">
+              <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Start</label>
+              <input
+                type="time"
+                className="input"
+                value={startTime}
+                onChange={e => setStartTime(e.target.value)}
+              />
+            </div>
+            <div className="flex flex-1 flex-col gap-1">
+              <label className="text-xs font-medium text-gray-500 dark:text-gray-400">End</label>
+              <input
+                type="time"
+                className="input"
+                value={endTime}
+                onChange={e => setEndTime(e.target.value)}
+              />
+            </div>
+          </div>
           <div className="flex gap-2">
             <select className="input flex-1" value={type} onChange={e => setType(e.target.value as 'soft' | 'hard')}>
               <option value="soft">Soft</option>
