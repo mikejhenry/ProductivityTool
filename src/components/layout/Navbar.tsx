@@ -18,8 +18,10 @@ export function Navbar({ onCopyWeek }: NavbarProps) {
   const theme = profile?.theme ?? 'light'
 
   function toggleTheme() {
-    const next = theme === 'light' ? 'dark' : 'light'
-    document.documentElement.classList.toggle('dark', next === 'dark')
+    const isDark = document.documentElement.classList.contains('dark')
+    const next = isDark ? 'light' : 'dark'
+    document.documentElement.classList.toggle('dark', !isDark)
+    localStorage.setItem('theme', next)
     updateTheme(next)
   }
 
