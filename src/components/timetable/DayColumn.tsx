@@ -27,7 +27,7 @@ export function DayColumn({ dayIndex, weekStart, blocks, dailyTasks, onEdit, onC
   return (
     <div className="flex flex-col border-r border-gray-200 dark:border-slate-700 last:border-r-0 min-w-0">
       {/* Day header */}
-      <div className={`sticky top-0 z-20 border-b border-gray-200 bg-white py-1 text-center text-xs font-medium dark:border-slate-700 dark:bg-slate-900 ${isToday ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-500 dark:text-gray-400'}`}>
+      <div className={`sticky top-0 z-20 flex h-6 items-center justify-center border-b border-gray-200 bg-white text-center text-xs font-medium dark:border-slate-700 dark:bg-slate-900 ${isToday ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-500 dark:text-gray-400'}`}>
         {dayLabel}
       </div>
 

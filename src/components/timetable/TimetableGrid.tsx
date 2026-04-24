@@ -121,15 +121,17 @@ export function TimetableGrid({ weekStart, blocks, tasks, onCreate, onUpdate, on
       <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
         <div ref={scrollRef} className="flex flex-1 overflow-y-auto">
           {/* Hours column */}
-          <div className="sticky left-0 z-10 flex w-12 flex-col flex-shrink-0 border-r border-gray-200 bg-white dark:border-slate-700 dark:bg-slate-900">
-            <div className="h-7 border-b border-gray-200 dark:border-slate-700" />
+          <div className="sticky left-0 z-10 flex w-14 flex-col flex-shrink-0 border-r border-gray-200 bg-white dark:border-slate-700 dark:bg-slate-900">
+            <div className="h-6 border-b border-gray-200 dark:border-slate-700" />
             {HOUR_LABELS.map((label, i) => (
               <div
                 key={i}
-                className="flex items-start justify-end pr-1.5 pt-0.5 text-[10px] text-gray-400 dark:text-slate-500"
+                className="relative flex-shrink-0 text-right"
                 style={{ height: `${HOUR_HEIGHT}px` }}
               >
-                {label}
+                <span className="absolute right-1.5 -top-2 text-[10px] leading-none text-gray-400 dark:text-slate-500">
+                  {label}
+                </span>
               </div>
             ))}
           </div>
