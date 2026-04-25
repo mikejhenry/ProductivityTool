@@ -17,6 +17,7 @@ export default function AppPage() {
   const { tasks, createTask, updateTask, deleteTask } = useTasks()
 
   const [showWeekPicker, setShowWeekPicker] = useState(false)
+  const [showTasks, setShowTasks] = useState(false)
 
   async function handleCopyWeek(sourceBlocks: TimeBlock[], targetWeekStart: Date) {
     if (sourceBlocks.length === 0) return
@@ -44,7 +45,7 @@ export default function AppPage() {
       <Navbar onCopyWeek={() => setShowWeekPicker(true)} />
       <NotificationBanner blocks={blocks} />
       <WeeklySummary blocks={blocks} />
-      <div className="flex flex-1 overflow-hidden">
+      <div className="relative flex flex-1 overflow-hidden">
         <TimetableGrid
           weekStart={weekStart}
           blocks={blocks}
@@ -53,8 +54,16 @@ export default function AppPage() {
           onUpdate={updateBlock}
           onDelete={deleteBlock}
         />
+        <button
+          onClick={() => setShowTasks(true)}
+          className="absolute bottom-4 right-4 z-20 rounded-full bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-lg hover:bg-indigo-700"
+        >
+          Tasks
+        </button>
         <TaskList
           tasks={tasks}
+          open={showTasks}
+          onClose={() => setShowTasks(false)}
           onCreate={createTask}
           onUpdate={updateTask}
           onDelete={deleteTask}
