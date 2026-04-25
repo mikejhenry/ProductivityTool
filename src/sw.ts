@@ -94,6 +94,22 @@ setInterval(async () => {
   if (due.length > 0) await deleteFiredReminders(due.map(r => r.id))
 }, 30_000) as unknown as number
 
+// Handle server-sent push notifications
+self.addEventListener('push', (e: PushEvent) => {
+  const data = e.data?.json() ?? {}
+  e.waitUntil(
+    self.registration.showNotification(data.title ?? 'TimeBlock', {
+      body: data.body ?? 'You have an upcoming block',
+      icon: '/icons/icon-192.png',
+      tag: data.tag,
+      data: { url: data.url ?? '/app/today' },
+      actions: [
+        { action: 'open', title: 'Open app' },
+      ],
+    })
+  )
+})
+
 self.addEventListener('notificationclick', (e: NotificationEvent) => {
   e.notification.close()
   if (e.action === 'snooze') return
