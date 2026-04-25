@@ -56,7 +56,7 @@ export default function AppPage() {
         />
         <button
           onClick={() => setShowTasks(true)}
-          className="absolute bottom-4 right-4 z-20 min-w-[72px] rounded-full bg-indigo-600 px-4 py-3 text-sm font-medium text-white shadow-lg hover:bg-indigo-700 sm:py-2"
+          className="absolute bottom-20 right-4 z-20 min-w-[72px] rounded-full bg-indigo-600 px-4 py-3 text-sm font-medium text-white shadow-lg hover:bg-indigo-700 sm:bottom-4 sm:py-2"
         >
           Tasks
         </button>
