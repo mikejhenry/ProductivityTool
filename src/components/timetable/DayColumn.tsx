@@ -18,6 +18,7 @@ export function DayColumn({ dayIndex, weekStart, blocks, dailyTasks, onEdit, onC
   const date = addDays(weekStart, dayIndex)
   const isToday = new Date().toDateString() === date.toDateString()
   const dayLabel = date.toLocaleDateString('en-US', { weekday: 'short', month: 'numeric', day: 'numeric' })
+  const dayLabelShort = date.toLocaleDateString('en-US', { weekday: 'narrow' }) + ' ' + date.getDate()
 
   const { setNodeRef } = useDroppable({
     id: `day-${dayIndex}`,
@@ -27,8 +28,9 @@ export function DayColumn({ dayIndex, weekStart, blocks, dailyTasks, onEdit, onC
   return (
     <div className="flex flex-col border-r border-gray-200 dark:border-slate-700 last:border-r-0 min-w-0">
       {/* Day header */}
-      <div className={`sticky top-0 z-20 flex h-6 items-center justify-center border-b border-gray-200 bg-white text-center text-xs font-medium dark:border-slate-700 dark:bg-slate-900 ${isToday ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-500 dark:text-gray-400'}`}>
-        {dayLabel}
+      <div className={`sticky top-0 z-20 flex h-7 items-center justify-center border-b border-gray-200 bg-white text-center text-xs font-medium dark:border-slate-700 dark:bg-slate-900 sm:h-6 ${isToday ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-500 dark:text-gray-400'}`}>
+        <span className="sm:hidden">{dayLabelShort}</span>
+        <span className="hidden sm:inline">{dayLabel}</span>
       </div>
 
       {/* Hour grid */}

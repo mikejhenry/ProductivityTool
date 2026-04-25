@@ -20,7 +20,7 @@ export function TaskChecklist({ tasks, todayBlocks, onToggle }: Props) {
   const allTasks = [...dailyTasks, ...linkedFlexible]
 
   return (
-    <aside className="w-64 overflow-y-auto border-l border-gray-200 bg-gray-50 p-4 dark:border-slate-700 dark:bg-slate-900">
+    <aside className="w-full overflow-y-auto border-t border-gray-200 bg-gray-50 p-3 dark:border-slate-700 dark:bg-slate-900 md:w-64 md:border-l md:border-t-0 md:p-4">
       <h2 className="mb-3 text-sm font-semibold text-gray-700 dark:text-gray-200">Today's Tasks</h2>
       {allTasks.length === 0 && <p className="text-xs text-gray-400">No tasks for today.</p>}
       <div className="space-y-2">
@@ -34,7 +34,7 @@ export function TaskChecklist({ tasks, todayBlocks, onToggle }: Props) {
                 checked={done}
                 disabled={!block}
                 onChange={e => block && onToggle(block.id, e.target.checked)}
-                className="h-4 w-4 rounded border-gray-300 text-indigo-600"
+                className="h-5 w-5 rounded border-gray-300 text-indigo-600 sm:h-4 sm:w-4"
               />
               <span className={`text-sm ${done ? 'text-gray-400 line-through' : 'text-gray-800 dark:text-gray-200'}`}>
                 {task.title}

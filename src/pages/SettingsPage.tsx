@@ -22,15 +22,15 @@ export default function SettingsPage() {
   return (
     <div className="flex h-screen flex-col bg-gray-50 dark:bg-slate-900">
       <Navbar />
-      <div className="mx-auto mt-8 w-full max-w-md rounded-xl bg-white p-6 shadow dark:bg-slate-800">
-        <h1 className="mb-6 text-xl font-bold text-gray-900 dark:text-white">Settings</h1>
+      <div className="mx-auto mt-8 w-full max-w-md rounded-xl bg-white p-4 shadow dark:bg-slate-800 sm:p-6">
+        <h1 className="mb-6 text-lg font-bold text-gray-900 dark:text-white sm:text-xl">Settings</h1>
 
         <div className="mb-6">
           <h2 className="mb-2 text-sm font-semibold text-gray-700 dark:text-gray-300">Recovery Email</h2>
           {!profile?.has_real_email && (
             <p className="mb-2 text-xs text-amber-600">No recovery email set. Add one to enable password reset.</p>
           )}
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row">
             <input
               className="flex-1 rounded border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-700 dark:text-white"
               type="email"
@@ -39,7 +39,7 @@ export default function SettingsPage() {
               placeholder="your@email.com"
             />
             <button
-              className="rounded bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700"
+              className="w-full rounded bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700 sm:w-auto"
               onClick={handleSaveEmail}
             >
               Save

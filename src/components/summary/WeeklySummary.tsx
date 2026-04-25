@@ -6,9 +6,9 @@ export function WeeklySummary({ blocks }: { blocks: TimeBlock[] }) {
   const hours = (s.totalMinutes / 60).toFixed(1)
 
   return (
-    <div className="flex gap-6 border-b border-gray-200 bg-white px-4 py-2 text-sm dark:border-slate-700 dark:bg-slate-800">
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-gray-200 bg-white px-3 py-2 text-xs dark:border-slate-700 dark:bg-slate-800 sm:gap-x-6 sm:px-4 sm:text-sm">
       <Stat label="Planned" value={`${hours}h`} />
-      <Stat label="Completed" value={s.completed} color="text-green-600" />
+      <Stat label="Done" value={s.completed} color="text-green-600" />
       <Stat label="Moved" value={s.moved} color="text-amber-500" />
       <Stat label="Skipped" value={s.skipped} color="text-gray-400" />
       <Stat label="Rate" value={`${s.completionRate.toFixed(0)}%`} color="text-indigo-600" />

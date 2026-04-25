@@ -22,8 +22,8 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-slate-900">
-      <div className="w-full max-w-sm rounded-xl bg-white p-8 shadow dark:bg-slate-800">
-        <h1 className="mb-6 text-2xl font-bold text-gray-900 dark:text-white">Sign in</h1>
+      <div className="w-full max-w-sm rounded-xl bg-white p-5 shadow dark:bg-slate-800 sm:p-8">
+        <h1 className="mb-6 text-xl font-bold text-gray-900 dark:text-white sm:text-2xl">Sign in</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <input className="input" placeholder="Email" type="email" value={email} onChange={e => setEmail(e.target.value)} required />
           <input className="input" placeholder="Password" type="password" value={password} onChange={e => setPassword(e.target.value)} required />

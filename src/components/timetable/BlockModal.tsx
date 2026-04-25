@@ -57,8 +57,8 @@ export function BlockModal({ initial, tasks, onSave, onDelete, onClose }: Props)
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
-      <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl dark:bg-slate-800" onClick={e => e.stopPropagation()}>
-        <h2 className="mb-4 text-lg font-bold text-gray-900 dark:text-white">
+      <div className="w-full max-w-md rounded-xl bg-white p-4 shadow-xl dark:bg-slate-800 sm:p-6" onClick={e => e.stopPropagation()}>
+        <h2 className="mb-4 text-base font-bold text-gray-900 dark:text-white sm:text-lg">
           {initial?.id ? 'Edit block' : 'New block'}
         </h2>
         <div className="space-y-3">

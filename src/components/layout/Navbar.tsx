@@ -26,34 +26,39 @@ export function Navbar({ onCopyWeek }: NavbarProps) {
   }
 
   return (
-    <nav className="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-2 dark:border-slate-700 dark:bg-slate-800">
-      <div className="flex items-center gap-4">
-        <span className="font-bold text-indigo-600 dark:text-indigo-400">TimeBlock</span>
-        <Link to="/app/today" className={`btn-ghost ${isToday ? 'font-semibold' : ''}`}>Today</Link>
-        <Link to="/app" className={`btn-ghost ${!isToday ? 'font-semibold' : ''}`}>Week</Link>
+    <nav className="border-b border-gray-200 bg-white dark:border-slate-700 dark:bg-slate-800">
+      {/* Top row: always visible */}
+      <div className="flex items-center justify-between px-3 py-2">
+        <div className="flex items-center gap-2">
+          <span className="font-bold text-indigo-600 dark:text-indigo-400">TimeBlock</span>
+          <Link to="/app/today" className={`rounded px-2 py-1.5 text-sm ${isToday ? 'font-semibold text-indigo-600 dark:text-indigo-400' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700'}`}>Today</Link>
+          <Link to="/app" className={`rounded px-2 py-1.5 text-sm ${!isToday ? 'font-semibold text-indigo-600 dark:text-indigo-400' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700'}`}>Week</Link>
+        </div>
+        <div className="flex items-center gap-1">
+          <button className="rounded p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700" onClick={toggleTheme} title="Toggle theme">
+            {theme === 'dark' ? '☀️' : '🌙'}
+          </button>
+          <Link to="/app/settings" className="rounded px-2 py-1.5 text-sm text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700">Settings</Link>
+          <button className="rounded px-2 py-1.5 text-sm text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700" onClick={async () => { await signOut(); navigate('/login') }}>Sign out</button>
+        </div>
       </div>
 
+      {/* Week navigation row — only on week view */}
       {!isToday && (
-        <div className="flex items-center gap-2">
-          <button className="btn-ghost" onClick={() => setWeekStart(addDays(weekStart, -7))}>‹</button>
-          <span className="text-sm text-gray-700 dark:text-gray-300">{formatWeekRange(weekStart)}</span>
-          <button className="btn-ghost" onClick={() => setWeekStart(addDays(weekStart, 7))}>›</button>
+        <div className="flex items-center justify-between border-t border-gray-100 px-3 py-1.5 dark:border-slate-700">
+          <div className="flex items-center gap-1">
+            <button className="rounded p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700" onClick={() => setWeekStart(addDays(weekStart, -7))}>‹</button>
+            <span className="text-xs text-gray-600 dark:text-gray-300 sm:text-sm">{formatWeekRange(weekStart)}</span>
+            <button className="rounded p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700" onClick={() => setWeekStart(addDays(weekStart, 7))}>›</button>
+          </div>
           <button
             onClick={() => onCopyWeek?.()}
-            className="rounded px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700"
+            className="rounded px-2 py-1.5 text-xs text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700"
           >
             Copy week
           </button>
         </div>
       )}
-
-      <div className="flex items-center gap-2">
-        <button className="btn-ghost" onClick={toggleTheme} title="Toggle theme">
-          {theme === 'dark' ? '☀️' : '🌙'}
-        </button>
-        <Link to="/app/settings" className="btn-ghost">Settings</Link>
-        <button className="btn-ghost" onClick={async () => { await signOut(); navigate('/login') }}>Sign out</button>
-      </div>
     </nav>
   )
 }

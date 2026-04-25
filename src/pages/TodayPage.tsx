@@ -28,7 +28,7 @@ export default function TodayPage() {
     <div className="flex h-screen flex-col bg-gray-50 dark:bg-slate-900">
       <Navbar />
       <NotificationBanner blocks={blocks} />
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 flex-col overflow-hidden md:flex-row">
         <TodayTimeline blocks={todayBlocks} onStatusChange={handleStatusChange} />
         <TaskChecklist tasks={tasks} todayBlocks={todayBlocks} onToggle={handleToggle} />
       </div>

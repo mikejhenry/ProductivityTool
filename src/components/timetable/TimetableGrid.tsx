@@ -111,7 +111,7 @@ export function TimetableGrid({ weekStart, blocks, tasks, onCreate, onUpdate, on
       {/* Jump to now button */}
       <div className="flex items-center justify-end border-b border-gray-200 px-3 py-1 dark:border-slate-700">
         <button
-          className="rounded px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700"
+          className="rounded px-2 py-2 text-xs text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700 sm:py-1"
           onClick={jumpToNow}
         >
           Jump to now
@@ -119,9 +119,9 @@ export function TimetableGrid({ weekStart, blocks, tasks, onCreate, onUpdate, on
       </div>
 
       <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-        <div ref={scrollRef} className="flex flex-1 overflow-y-auto">
+        <div ref={scrollRef} className="flex flex-1 overflow-auto">
           {/* Hours column */}
-          <div className="sticky left-0 z-10 flex w-14 flex-col flex-shrink-0 border-r border-gray-200 bg-white dark:border-slate-700 dark:bg-slate-900">
+          <div className="sticky left-0 z-10 flex w-10 flex-col flex-shrink-0 border-r border-gray-200 bg-white dark:border-slate-700 dark:bg-slate-900 sm:w-14">
             <div className="h-6 border-b border-gray-200 dark:border-slate-700" />
             {HOUR_LABELS.map((label, i) => (
               <div
@@ -137,7 +137,7 @@ export function TimetableGrid({ weekStart, blocks, tasks, onCreate, onUpdate, on
           </div>
 
           {/* Day columns */}
-          <div className="grid flex-1 min-w-0" style={{ gridTemplateColumns: 'repeat(7, minmax(0, 1fr))' }}>
+          <div className="grid min-w-[480px] flex-1" style={{ gridTemplateColumns: 'repeat(7, minmax(0, 1fr))' }}>
             {Array.from({ length: 7 }, (_, i) => (
               <DayColumn
                 key={i}

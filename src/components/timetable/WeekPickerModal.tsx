@@ -33,14 +33,14 @@ export function WeekPickerModal({ currentWeekStart, allFetchedBlocks, onCopy, on
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
-      <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl dark:bg-slate-800" onClick={e => e.stopPropagation()}>
-        <h2 className="mb-4 text-lg font-bold text-gray-900 dark:text-white">Copy from previous week</h2>
-        <div className="max-h-64 space-y-1 overflow-y-auto">
+      <div className="w-full max-w-md rounded-xl bg-white p-4 shadow-xl dark:bg-slate-800 sm:p-6" onClick={e => e.stopPropagation()}>
+        <h2 className="mb-4 text-base font-bold text-gray-900 dark:text-white sm:text-lg">Copy from previous week</h2>
+        <div className="max-h-48 space-y-1 overflow-y-auto sm:max-h-64">
           {options.map(opt => (
             <button
               key={opt.weekStart.getTime()}
               onClick={() => setSelected(opt.weekStart)}
-              className={`w-full rounded-lg px-3 py-2 text-left text-sm ${selected?.getTime() === opt.weekStart.getTime() ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200' : 'hover:bg-gray-50 dark:hover:bg-slate-700'}`}
+              className={`w-full rounded-lg px-3 py-3 text-left text-sm sm:py-2 ${selected?.getTime() === opt.weekStart.getTime() ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200' : 'hover:bg-gray-50 dark:hover:bg-slate-700'}`}
             >
               <span className="font-medium">{formatWeekRange(opt.weekStart)}</span>
               <span className="ml-2 text-gray-400">{opt.blocks.length} blocks</span>
