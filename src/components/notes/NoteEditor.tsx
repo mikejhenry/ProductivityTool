@@ -17,12 +17,22 @@ export function NoteEditor({ note, onUpdate, onDelete, onBack }: NoteEditorProps
 
   // Sync local state when selected note changes
   useEffect(() => {
+    if (titleDebounce.current) clearTimeout(titleDebounce.current)
+    if (bodyDebounce.current) clearTimeout(bodyDebounce.current)
     if (note) {
       setTitle(note.title)
       setBody(note.body)
       setDeleteError('')
     }
   }, [note?.id])
+
+  // Cleanup timers on unmount
+  useEffect(() => {
+    return () => {
+      if (titleDebounce.current) clearTimeout(titleDebounce.current)
+      if (bodyDebounce.current) clearTimeout(bodyDebounce.current)
+    }
+  }, [])
 
   function handleTitleChange(value: string) {
     setTitle(value)
