@@ -52,7 +52,13 @@ export function TaskList({ tasks, open, onClose, onCreate, onUpdate, onDelete }:
         {modal && (
           <TaskModal
             initial={modal.task}
-            onSave={t => modal.task ? onUpdate({ id: modal.task.id, ...t }) : onCreate(t)}
+            onSave={t => {
+              if (modal.task) {
+                onUpdate({ id: modal.task.id, ...t }).then(() => setModal(null))
+              } else {
+                onCreate(t).then(() => setModal(null))
+              }
+            }}
             onDelete={modal.task ? () => { onDelete(modal.task!.id); setModal(null) } : undefined}
             onClose={() => setModal(null)}
           />

@@ -28,8 +28,12 @@ export default function TodayPage() {
   }
 
   async function handleCreateTask(payload: Omit<Task, 'id' | 'user_id' | 'created_at'>) {
-    await createTask(payload).catch(e => console.warn('Failed to create task', e))
-    setShowModal(false)
+    try {
+      await createTask(payload)
+      setShowModal(false)
+    } catch (e) {
+      console.error('Failed to create task', e)
+    }
   }
 
   return (

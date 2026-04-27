@@ -28,7 +28,6 @@ export function TaskModal({ initial, onSave, onDelete, onClose }: Props) {
       preferred_time: preferredTime ? `${preferredTime}:00` : null,
       repeat_days: type === 'daily' ? repeatDays : [],
     })
-    onClose()
   }
 
   return (
