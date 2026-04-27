@@ -45,10 +45,31 @@ export function TaskModal({ initial, onSave, onDelete, onClose }: Props) {
             onChange={e => setTitle(e.target.value)}
             autoFocus
           />
-          <select className="input" value={type} onChange={e => setType(e.target.value as 'daily' | 'flexible')}>
-            <option value="flexible">Flexible</option>
-            <option value="daily">Daily</option>
-          </select>
+          {/* Task type radio buttons */}
+          <div className="flex gap-4">
+            <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+              <input
+                type="radio"
+                name="task-type"
+                value="flexible"
+                checked={type === 'flexible'}
+                onChange={() => setType('flexible')}
+                className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500"
+              />
+              Normal task
+            </label>
+            <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+              <input
+                type="radio"
+                name="task-type"
+                value="daily"
+                checked={type === 'daily'}
+                onChange={() => setType('daily')}
+                className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500"
+              />
+              Scheduled task
+            </label>
+          </div>
           {type === 'daily' && (
             <div className="flex gap-1">
               {DAYS.map((d, i) => (
