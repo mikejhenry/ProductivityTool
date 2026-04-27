@@ -39,6 +39,14 @@ export interface Note {
   updated_at: string
 }
 
+export interface ShoppingItem {
+  id: string
+  user_id: string
+  name: string
+  checked: boolean
+  created_at: string
+}
+
 export interface WeekSummary {
   totalMinutes: number
   completed: number
