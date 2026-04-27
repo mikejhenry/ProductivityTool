@@ -41,12 +41,10 @@ export default function AppPage() {
   }
 
   async function handleUpdateBlock(patch: Partial<TimeBlock> & { id: string }) {
+    const block = blocks.find(b => b.id === patch.id)  // read before any await
     await updateBlock(patch)
-    if ('title' in patch) {
-      const block = blocks.find(b => b.id === patch.id)
-      if (block?.task_id) {
-        await updateTask({ id: block.task_id, title: patch.title })
-      }
+    if ('title' in patch && patch.title !== undefined && block?.task_id) {
+      await updateTask({ id: block.task_id, title: patch.title })
     }
   }
 
