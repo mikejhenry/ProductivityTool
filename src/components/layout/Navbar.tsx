@@ -15,6 +15,8 @@ export function Navbar({ onCopyWeek }: NavbarProps) {
   const navigate = useNavigate()
   const location = useLocation()
   const isToday = location.pathname === '/app/today'
+  const isWeek = location.pathname === '/app'
+  const isNotes = location.pathname.startsWith('/app/notes')
   const theme = profile?.theme ?? 'light'
 
   function toggleTheme() {
@@ -42,10 +44,16 @@ export function Navbar({ onCopyWeek }: NavbarProps) {
       {/* Nav links row */}
       <div className="flex items-center gap-1 border-t border-gray-100 px-3 py-1 dark:border-slate-700">
         <Link to="/app/today" className={`rounded px-3 py-1.5 text-sm ${isToday ? 'font-semibold text-indigo-600 dark:text-indigo-400' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700'}`}>Today</Link>
-        <Link to="/app" className={`rounded px-3 py-1.5 text-sm ${!isToday ? 'font-semibold text-indigo-600 dark:text-indigo-400' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700'}`}>Week</Link>
+        <Link to="/app" className={`rounded px-3 py-1.5 text-sm ${isWeek ? 'font-semibold text-indigo-600 dark:text-indigo-400' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700'}`}>Week</Link>
+        <Link
+          to="/app/notes"
+          className={`rounded px-3 py-1.5 text-sm ${isNotes ? 'font-semibold text-indigo-600 dark:text-indigo-400' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700'}`}
+        >
+          Notes
+        </Link>
 
         {/* Week navigation — inline on the nav row, only on week view */}
-        {!isToday && (
+        {isWeek && (
           <div className="ml-auto flex items-center gap-1">
             <button className="rounded p-1.5 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700" onClick={() => setWeekStart(addDays(weekStart, -7))}>‹</button>
             <span className="text-xs text-gray-600 dark:text-gray-300 sm:text-sm">{formatWeekRange(weekStart)}</span>
