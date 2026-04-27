@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Task } from '../../types'
 import { DAYS_OF_WEEK } from '../../lib/constants'
 
@@ -34,6 +34,14 @@ export function ScheduledTaskModal({ onSave, onClose }: Props) {
   const [repeats, setRepeats] = useState(false)
   const [repeatDays, setRepeatDays] = useState<number[]>([])
 
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', handleKey)
+    return () => document.removeEventListener('keydown', handleKey)
+  }, [onClose])
+
   function toggleDay(d: number) {
     setRepeatDays(prev => prev.includes(d) ? prev.filter(x => x !== d) : [...prev, d])
   }
@@ -52,8 +60,8 @@ export function ScheduledTaskModal({ onSave, onClose }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
-      <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl dark:bg-slate-800" onClick={e => e.stopPropagation()}>
-        <h2 className="mb-4 text-lg font-bold text-gray-900 dark:text-white">Scheduled task</h2>
+      <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl dark:bg-slate-800" role="dialog" aria-modal="true" aria-labelledby="scheduled-modal-title" onClick={e => e.stopPropagation()}>
+        <h2 id="scheduled-modal-title" className="mb-4 text-lg font-bold text-gray-900 dark:text-white">Scheduled task</h2>
         <div className="space-y-3">
           <input
             className="input"
@@ -106,6 +114,7 @@ export function ScheduledTaskModal({ onSave, onClose }: Props) {
                 <button
                   key={d}
                   type="button"
+                  aria-pressed={repeatDays.includes(i)}
                   onClick={() => toggleDay(i)}
                   className={`flex-1 rounded py-1 text-xs font-medium ${
                     repeatDays.includes(i)
@@ -121,7 +130,7 @@ export function ScheduledTaskModal({ onSave, onClose }: Props) {
         </div>
         <div className="mt-4 flex justify-end gap-2">
           <button type="button" className="btn-ghost" onClick={onClose}>Cancel</button>
-          <button type="button" className="btn-primary disabled:opacity-50" disabled={!startTime || !endTime} onClick={handleSave}>Save</button>
+          <button type="button" className="btn-primary disabled:opacity-50" disabled={!title.trim() || !startTime || !endTime} onClick={handleSave}>Save</button>
         </div>
       </div>
     </div>

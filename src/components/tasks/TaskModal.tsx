@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Task } from '../../types'
 import { DAYS_OF_WEEK } from '../../lib/constants'
 
@@ -14,6 +14,14 @@ export function TaskModal({ initial, onSave, onDelete, onClose }: Props) {
   const [type, setType] = useState<'daily' | 'flexible'>(initial?.type ?? 'flexible')
   const [preferredTime, setPreferredTime] = useState(initial?.preferred_time?.slice(0, 5) ?? '')
   const [repeatDays, setRepeatDays] = useState<number[]>(initial?.repeat_days ?? [])
+
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', handleKey)
+    return () => document.removeEventListener('keydown', handleKey)
+  }, [onClose])
 
   function toggleDay(d: number) {
     setRepeatDays(prev => prev.includes(d) ? prev.filter(x => x !== d) : [...prev, d])
@@ -31,8 +39,8 @@ export function TaskModal({ initial, onSave, onDelete, onClose }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
-      <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl dark:bg-slate-800" onClick={e => e.stopPropagation()}>
-        <h2 className="mb-4 text-lg font-bold text-gray-900 dark:text-white">
+      <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl dark:bg-slate-800" role="dialog" aria-modal="true" aria-labelledby="task-modal-title" onClick={e => e.stopPropagation()}>
+        <h2 id="task-modal-title" className="mb-4 text-lg font-bold text-gray-900 dark:text-white">
           {initial?.id ? 'Edit task' : 'New task'}
         </h2>
         <div className="space-y-3">
@@ -74,6 +82,7 @@ export function TaskModal({ initial, onSave, onDelete, onClose }: Props) {
                 <button
                   key={d}
                   type="button"
+                  aria-pressed={repeatDays.includes(i)}
                   onClick={() => toggleDay(i)}
                   className={`flex-1 rounded py-1 text-xs font-medium ${
                     repeatDays.includes(i)
@@ -104,7 +113,7 @@ export function TaskModal({ initial, onSave, onDelete, onClose }: Props) {
           )}
           <div className="ml-auto flex gap-2">
             <button className="btn-ghost" onClick={onClose}>Cancel</button>
-            <button className="btn-primary" onClick={handleSave}>Save</button>
+            <button type="button" className="btn-primary disabled:opacity-50" disabled={!title.trim()} onClick={handleSave}>Save</button>
           </div>
         </div>
       </div>

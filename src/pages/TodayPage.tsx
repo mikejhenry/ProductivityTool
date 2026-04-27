@@ -29,8 +29,8 @@ function TypePickerModal({ onNormal, onScheduled, onClose }: TypePickerModalProp
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
-      <div className="w-full max-w-xs rounded-xl bg-white p-6 shadow-xl dark:bg-slate-800" onClick={e => e.stopPropagation()}>
-        <h2 className="mb-4 text-lg font-bold text-gray-900 dark:text-white">New task</h2>
+      <div className="w-full max-w-xs rounded-xl bg-white p-6 shadow-xl dark:bg-slate-800" role="dialog" aria-modal="true" aria-labelledby="picker-modal-title" onClick={e => e.stopPropagation()}>
+        <h2 id="picker-modal-title" className="mb-4 text-lg font-bold text-gray-900 dark:text-white">New task</h2>
         <div className="flex flex-col gap-3">
           <button type="button" className="btn-primary" onClick={onNormal}>Normal task</button>
           <button type="button" className="btn-primary" onClick={onScheduled}>Scheduled task</button>
