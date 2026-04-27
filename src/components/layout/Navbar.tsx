@@ -17,6 +17,7 @@ export function Navbar({ onCopyWeek }: NavbarProps) {
   const isToday = location.pathname === '/app/today'
   const isWeek = location.pathname === '/app'
   const isNotes = location.pathname.startsWith('/app/notes')
+  const isShopping = location.pathname === '/app/shopping'
   const theme = profile?.theme ?? 'light'
 
   function toggleTheme() {
@@ -50,6 +51,12 @@ export function Navbar({ onCopyWeek }: NavbarProps) {
           className={`rounded px-3 py-1.5 text-sm ${isNotes ? 'font-semibold text-indigo-600 dark:text-indigo-400' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700'}`}
         >
           Notes
+        </Link>
+        <Link
+          to="/app/shopping"
+          className={`rounded px-3 py-1.5 text-sm ${isShopping ? 'font-semibold text-indigo-600 dark:text-indigo-400' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700'}`}
+        >
+          Shopping
         </Link>
 
         {/* Week navigation — inline on the nav row, only on week view */}
