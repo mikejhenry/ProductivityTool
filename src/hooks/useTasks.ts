@@ -40,8 +40,19 @@ export function useTasks() {
     mutationFn: async ({ id, ...patch }: Partial<Task> & { id: string }) => {
       const { error } = await supabase.from('tasks').update(patch).eq('id', id)
       if (error) throw error
+      if ('title' in patch) {
+        const { error: blockError } = await supabase
+          .from('time_blocks')
+          .update({ title: patch.title })
+          .eq('task_id', id)
+          .eq('user_id', uid!)
+        if (blockError) throw blockError
+      }
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: key }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: key })
+      qc.invalidateQueries({ queryKey: ['blocks'] })
+    },
   })
 
   const deleteTask = useMutation({
