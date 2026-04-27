@@ -66,7 +66,7 @@ export function TaskModal({ initial, onSave, onDelete, onClose }: Props) {
                 onChange={() => setType('daily')}
                 className="h-4 w-4 accent-indigo-600 focus:ring-2 focus:ring-indigo-500"
               />
-              Scheduled task
+              Recurring
             </label>
           </div>
           {type === 'daily' && (
