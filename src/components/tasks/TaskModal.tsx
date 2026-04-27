@@ -69,7 +69,7 @@ export function TaskModal({ initial, onSave, onDelete, onClose }: Props) {
             </label>
           </div>
           {type === 'daily' && (
-            <div className="flex gap-1">
+            <div className="flex gap-1" role="group" aria-label="Repeat days">
               {DAYS_OF_WEEK.map((d, i) => (
                 <button
                   key={d}
