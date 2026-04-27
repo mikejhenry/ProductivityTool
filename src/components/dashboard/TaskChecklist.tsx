@@ -4,9 +4,10 @@ interface Props {
   tasks: Task[]
   todayBlocks: TimeBlock[]
   onToggle: (blockId: string, done: boolean) => void
+  onAddTask?: () => void
 }
 
-export function TaskChecklist({ tasks, todayBlocks, onToggle }: Props) {
+export function TaskChecklist({ tasks, todayBlocks, onToggle, onAddTask }: Props) {
   const today = new Date().getDay()
   const dailyTasks = tasks.filter(t => t.type === 'daily' && t.repeat_days.includes(today))
   const linkedTaskIds = new Set(todayBlocks.map(b => b.task_id).filter((id): id is string => id !== null))
@@ -21,7 +22,17 @@ export function TaskChecklist({ tasks, todayBlocks, onToggle }: Props) {
 
   return (
     <aside className="w-full overflow-y-auto border-t border-gray-200 bg-gray-50 p-3 dark:border-slate-700 dark:bg-slate-900 md:w-64 md:border-l md:border-t-0 md:p-4">
-      <h2 className="mb-3 text-sm font-semibold text-gray-700 dark:text-gray-200">Today's Tasks</h2>
+      <div className="mb-3 flex items-center justify-between">
+        <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-200">Today's Tasks</h2>
+        {onAddTask && (
+          <button
+            onClick={onAddTask}
+            className="text-xs font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300"
+          >
+            + New task
+          </button>
+        )}
+      </div>
       {allTasks.length === 0 && <p className="text-xs text-gray-400">No tasks for today.</p>}
       <div className="space-y-2">
         {allTasks.map(task => {
