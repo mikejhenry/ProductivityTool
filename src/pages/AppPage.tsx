@@ -40,6 +40,16 @@ export default function AppPage() {
     )
   }
 
+  async function handleUpdateBlock(patch: Partial<TimeBlock> & { id: string }) {
+    await updateBlock(patch)
+    if ('title' in patch) {
+      const block = blocks.find(b => b.id === patch.id)
+      if (block?.task_id) {
+        await updateTask({ id: block.task_id, title: patch.title })
+      }
+    }
+  }
+
   return (
     <div className="flex h-screen flex-col bg-gray-50 dark:bg-slate-900">
       <Navbar onCopyWeek={() => setShowWeekPicker(true)} />
@@ -51,7 +61,7 @@ export default function AppPage() {
           blocks={blocks}
           tasks={tasks}
           onCreate={createBlock}
-          onUpdate={updateBlock}
+          onUpdate={handleUpdateBlock}
           onDelete={deleteBlock}
         />
         <button
