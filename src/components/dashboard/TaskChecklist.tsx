@@ -26,8 +26,9 @@ export function TaskChecklist({ tasks, todayBlocks, onToggle, onAddTask }: Props
         <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-200">Today's Tasks</h2>
         {onAddTask && (
           <button
+            type="button"
             onClick={onAddTask}
-            className="text-xs font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300"
+            className="rounded px-2 py-1 text-xs font-medium text-indigo-600 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-slate-700"
           >
             + New task
           </button>
