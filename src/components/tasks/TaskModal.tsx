@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Task } from '../../types'
+import { DAYS_OF_WEEK } from '../../lib/constants'
 
 interface Props {
   initial?: Partial<Task>
@@ -7,8 +8,6 @@ interface Props {
   onDelete?: () => void
   onClose: () => void
 }
-
-const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
 export function TaskModal({ initial, onSave, onDelete, onClose }: Props) {
   const [title, setTitle] = useState(initial?.title ?? '')
@@ -71,7 +70,7 @@ export function TaskModal({ initial, onSave, onDelete, onClose }: Props) {
           </div>
           {type === 'daily' && (
             <div className="flex gap-1">
-              {DAYS.map((d, i) => (
+              {DAYS_OF_WEEK.map((d, i) => (
                 <button
                   key={d}
                   type="button"

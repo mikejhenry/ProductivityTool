@@ -1,6 +1,12 @@
 import { useState } from 'react'
 import { Task } from '../../types'
+import { DAYS_OF_WEEK } from '../../lib/constants'
 
+/**
+ * Raw date/time strings. The parent is responsible for assembling ISO timestamps
+ * from `date` + `startTime`/`endTime` before writing to the time_blocks table.
+ * Format: date = 'YYYY-MM-DD', startTime/endTime = 'HH:MM' (24h, may be empty string)
+ */
 interface BlockPayload {
   date: string       // 'YYYY-MM-DD'
   startTime: string  // 'HH:MM'
@@ -15,10 +21,9 @@ interface Props {
   onClose: () => void
 }
 
-const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-
 function todayString(): string {
-  return new Date().toISOString().slice(0, 10)
+  const d = new Date()
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
 export function ScheduledTaskModal({ onSave, onClose }: Props) {
@@ -35,6 +40,7 @@ export function ScheduledTaskModal({ onSave, onClose }: Props) {
 
   function handleSave() {
     if (!title.trim()) return
+    if (startTime && endTime && endTime <= startTime) return
     const task: Omit<Task, 'id' | 'user_id' | 'created_at'> = {
       title: title.trim(),
       type: repeats ? 'daily' : 'flexible',
@@ -90,13 +96,13 @@ export function ScheduledTaskModal({ onSave, onClose }: Props) {
               type="checkbox"
               checked={repeats}
               onChange={e => setRepeats(e.target.checked)}
-              className="h-4 w-4 accent-indigo-600"
+              className="h-4 w-4 accent-indigo-600 focus:ring-2 focus:ring-indigo-500"
             />
             Repeats
           </label>
           {repeats && (
-            <div className="flex gap-1">
-              {DAYS.map((d, i) => (
+            <div className="flex gap-1" role="group" aria-label="Repeat days">
+              {DAYS_OF_WEEK.map((d, i) => (
                 <button
                   key={d}
                   type="button"
