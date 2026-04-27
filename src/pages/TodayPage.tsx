@@ -1,10 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Navbar } from '../components/layout/Navbar'
 import { NotificationBanner } from '../components/layout/NotificationBanner'
 import { TodayTimeline } from '../components/dashboard/TodayTimeline'
 import { TaskChecklist } from '../components/dashboard/TaskChecklist'
 import { TaskModal } from '../components/tasks/TaskModal'
-import { ScheduledTaskModal } from '../components/tasks/ScheduledTaskModal'
+import { ScheduledTaskModal, BlockPayload } from '../components/tasks/ScheduledTaskModal'
 import { useWeek } from '../contexts/WeekContext'
 import { useTimeBlocks } from '../hooks/useTimeBlocks'
 import { useTasks } from '../hooks/useTasks'
@@ -19,6 +19,14 @@ interface TypePickerModalProps {
 }
 
 function TypePickerModal({ onNormal, onScheduled, onClose }: TypePickerModalProps) {
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', handleKey)
+    return () => document.removeEventListener('keydown', handleKey)
+  }, [onClose])
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
       <div className="w-full max-w-xs rounded-xl bg-white p-6 shadow-xl dark:bg-slate-800" onClick={e => e.stopPropagation()}>
@@ -26,6 +34,7 @@ function TypePickerModal({ onNormal, onScheduled, onClose }: TypePickerModalProp
         <div className="flex flex-col gap-3">
           <button type="button" className="btn-primary" onClick={onNormal}>Normal task</button>
           <button type="button" className="btn-primary" onClick={onScheduled}>Scheduled task</button>
+          <button type="button" className="btn-ghost" onClick={onClose}>Cancel</button>
         </div>
       </div>
     </div>
@@ -35,7 +44,7 @@ function TypePickerModal({ onNormal, onScheduled, onClose }: TypePickerModalProp
 export default function TodayPage() {
   const { weekStart } = useWeek()
   const { blocks, updateBlock, createBlock } = useTimeBlocks(weekStart)
-  const { tasks, createTask } = useTasks()
+  const { tasks, createTask, deleteTask } = useTasks()
   const [taskMode, setTaskMode] = useState<TaskMode>(null)
 
   const todayBlocks = blocks.filter(b =>
@@ -61,10 +70,11 @@ export default function TodayPage() {
 
   async function handleCreateScheduledTask(
     taskPayload: Omit<Task, 'id' | 'user_id' | 'created_at'>,
-    blockPayload: { date: string; startTime: string; endTime: string }
+    blockPayload: BlockPayload
   ) {
+    let newTask: Task | undefined
     try {
-      const newTask = await createTask(taskPayload)
+      newTask = await createTask(taskPayload)
       // Use local-time constructor to avoid UTC midnight off-by-one in non-UTC timezones
       const startDate = new Date(`${blockPayload.date}T00:00:00`)
       const [startH, startM] = blockPayload.startTime.split(':').map(Number)
@@ -85,6 +95,10 @@ export default function TodayPage() {
       setTaskMode(null)
     } catch (e) {
       console.error('Failed to create scheduled task', e)
+      // Best-effort rollback: delete the task if block creation failed
+      if (newTask) {
+        deleteTask(newTask.id).catch(re => console.error('Failed to rollback task', re))
+      }
     }
   }
 

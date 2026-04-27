@@ -7,7 +7,7 @@ import { DAYS_OF_WEEK } from '../../lib/constants'
  * from `date` + `startTime`/`endTime` before writing to the time_blocks table.
  * Format: date = 'YYYY-MM-DD', startTime/endTime = 'HH:MM' (24h, may be empty string)
  */
-interface BlockPayload {
+export interface BlockPayload {
   date: string       // 'YYYY-MM-DD'
   startTime: string  // 'HH:MM'
   endTime: string    // 'HH:MM'
@@ -121,7 +121,7 @@ export function ScheduledTaskModal({ onSave, onClose }: Props) {
         </div>
         <div className="mt-4 flex justify-end gap-2">
           <button type="button" className="btn-ghost" onClick={onClose}>Cancel</button>
-          <button type="button" className="btn-primary" onClick={handleSave}>Save</button>
+          <button type="button" className="btn-primary disabled:opacity-50" disabled={!startTime || !endTime} onClick={handleSave}>Save</button>
         </div>
       </div>
     </div>
