@@ -38,7 +38,8 @@ export function useTasks() {
 
   const updateTask = useMutation({
     mutationFn: async ({ id, ...patch }: Partial<Task> & { id: string }) => {
-      const { error } = await supabase.from('tasks').update(patch).eq('id', id)
+      if (!uid) throw new Error('Not authenticated')
+      const { error } = await supabase.from('tasks').update(patch).eq('id', id).eq('user_id', uid!)
       if (error) throw error
       if ('title' in patch) {
         const { error: blockError } = await supabase
@@ -51,6 +52,7 @@ export function useTasks() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: key })
+      // Invalidate all week block queries (prefix match) so every view reflects the new title
       qc.invalidateQueries({ queryKey: ['blocks'] })
     },
   })
