@@ -56,8 +56,8 @@ export function Navbar({ onCopyWeek }: NavbarProps) {
           to="/app/shopping"
           className={`rounded px-3 py-1.5 text-sm ${isShopping ? 'font-semibold text-indigo-600 dark:text-indigo-400' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700'}`}
         >
-          Shopping
-        </Link>
+          Shopping List
+</Link>
 
         {/* Week navigation — inline on the nav row, only on week view */}
         {isWeek && (
