@@ -4,16 +4,39 @@ import { NotificationBanner } from '../components/layout/NotificationBanner'
 import { TodayTimeline } from '../components/dashboard/TodayTimeline'
 import { TaskChecklist } from '../components/dashboard/TaskChecklist'
 import { TaskModal } from '../components/tasks/TaskModal'
+import { ScheduledTaskModal } from '../components/tasks/ScheduledTaskModal'
 import { useWeek } from '../contexts/WeekContext'
 import { useTimeBlocks } from '../hooks/useTimeBlocks'
 import { useTasks } from '../hooks/useTasks'
 import { Task, TimeBlock } from '../types'
 
+type TaskMode = null | 'pick' | 'normal' | 'scheduled'
+
+interface TypePickerModalProps {
+  onNormal: () => void
+  onScheduled: () => void
+  onClose: () => void
+}
+
+function TypePickerModal({ onNormal, onScheduled, onClose }: TypePickerModalProps) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
+      <div className="w-full max-w-xs rounded-xl bg-white p-6 shadow-xl dark:bg-slate-800" onClick={e => e.stopPropagation()}>
+        <h2 className="mb-4 text-lg font-bold text-gray-900 dark:text-white">New task</h2>
+        <div className="flex flex-col gap-3">
+          <button type="button" className="btn-primary" onClick={onNormal}>Normal task</button>
+          <button type="button" className="btn-primary" onClick={onScheduled}>Scheduled task</button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function TodayPage() {
   const { weekStart } = useWeek()
-  const { blocks, updateBlock } = useTimeBlocks(weekStart)
+  const { blocks, updateBlock, createBlock } = useTimeBlocks(weekStart)
   const { tasks, createTask } = useTasks()
-  const [showModal, setShowModal] = useState(false)
+  const [taskMode, setTaskMode] = useState<TaskMode>(null)
 
   const todayBlocks = blocks.filter(b =>
     new Date(b.start_time).toDateString() === new Date().toDateString()
@@ -27,12 +50,41 @@ export default function TodayPage() {
     updateBlock({ id: blockId, status: done ? 'completed' : 'planned' })
   }
 
-  async function handleCreateTask(payload: Omit<Task, 'id' | 'user_id' | 'created_at'>) {
+  async function handleCreateNormalTask(payload: Omit<Task, 'id' | 'user_id' | 'created_at'>) {
     try {
       await createTask(payload)
-      setShowModal(false)
+      setTaskMode(null)
     } catch (e) {
       console.error('Failed to create task', e)
+    }
+  }
+
+  async function handleCreateScheduledTask(
+    taskPayload: Omit<Task, 'id' | 'user_id' | 'created_at'>,
+    blockPayload: { date: string; startTime: string; endTime: string }
+  ) {
+    try {
+      const newTask = await createTask(taskPayload)
+      // Use local-time constructor to avoid UTC midnight off-by-one in non-UTC timezones
+      const startDate = new Date(`${blockPayload.date}T00:00:00`)
+      const [startH, startM] = blockPayload.startTime.split(':').map(Number)
+      startDate.setHours(startH, startM, 0, 0)
+      const endDate = new Date(`${blockPayload.date}T00:00:00`)
+      const [endH, endM] = blockPayload.endTime.split(':').map(Number)
+      endDate.setHours(endH, endM, 0, 0)
+      await createBlock({
+        task_id: newTask.id,
+        title: taskPayload.title,
+        start_time: startDate.toISOString(),
+        end_time: endDate.toISOString(),
+        type: 'soft',
+        status: 'planned',
+        reminder_minutes: [],
+        color: null,
+      })
+      setTaskMode(null)
+    } catch (e) {
+      console.error('Failed to create scheduled task', e)
     }
   }
 
@@ -46,13 +98,26 @@ export default function TodayPage() {
           tasks={tasks}
           todayBlocks={todayBlocks}
           onToggle={handleToggle}
-          onAddTask={() => setShowModal(true)}
+          onAddTask={() => setTaskMode('pick')}
         />
       </div>
-      {showModal && (
+      {taskMode === 'pick' && (
+        <TypePickerModal
+          onNormal={() => setTaskMode('normal')}
+          onScheduled={() => setTaskMode('scheduled')}
+          onClose={() => setTaskMode(null)}
+        />
+      )}
+      {taskMode === 'normal' && (
         <TaskModal
-          onSave={handleCreateTask}
-          onClose={() => setShowModal(false)}
+          onSave={handleCreateNormalTask}
+          onClose={() => setTaskMode(null)}
+        />
+      )}
+      {taskMode === 'scheduled' && (
+        <ScheduledTaskModal
+          onSave={handleCreateScheduledTask}
+          onClose={() => setTaskMode(null)}
         />
       )}
     </div>
