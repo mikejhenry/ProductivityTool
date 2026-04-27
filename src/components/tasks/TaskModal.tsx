@@ -46,7 +46,7 @@ export function TaskModal({ initial, onSave, onDelete, onClose }: Props) {
             autoFocus
           />
           {/* Task type radio buttons */}
-          <div className="flex gap-4">
+          <div className="flex gap-4" role="group" aria-label="Task type">
             <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
               <input
                 type="radio"
@@ -54,7 +54,7 @@ export function TaskModal({ initial, onSave, onDelete, onClose }: Props) {
                 value="flexible"
                 checked={type === 'flexible'}
                 onChange={() => setType('flexible')}
-                className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                className="h-4 w-4 accent-indigo-600 focus:ring-2 focus:ring-indigo-500"
               />
               Normal task
             </label>
@@ -65,7 +65,7 @@ export function TaskModal({ initial, onSave, onDelete, onClose }: Props) {
                 value="daily"
                 checked={type === 'daily'}
                 onChange={() => setType('daily')}
-                className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                className="h-4 w-4 accent-indigo-600 focus:ring-2 focus:ring-indigo-500"
               />
               Scheduled task
             </label>
