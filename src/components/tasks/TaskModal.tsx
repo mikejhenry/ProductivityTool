@@ -3,7 +3,7 @@ import { Task } from '../../types'
 
 interface Props {
   initial?: Partial<Task>
-  onSave: (t: Omit<Task, 'id' | 'user_id' | 'created_at'>) => void
+  onSave: (t: Omit<Task, 'id' | 'user_id' | 'created_at'>) => void | Promise<void>
   onDelete?: () => void
   onClose: () => void
 }
@@ -74,6 +74,7 @@ export function TaskModal({ initial, onSave, onDelete, onClose }: Props) {
               {DAYS.map((d, i) => (
                 <button
                   key={d}
+                  type="button"
                   onClick={() => toggleDay(i)}
                   className={`flex-1 rounded py-1 text-xs font-medium ${
                     repeatDays.includes(i)
