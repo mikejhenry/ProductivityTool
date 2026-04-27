@@ -28,7 +28,7 @@ export default function ShoppingPage() {
 
           {/* Error state */}
           {loadError && (
-            <p className="mb-4 text-sm text-red-500">Failed to load shopping list.</p>
+            <p className="mb-4 text-sm text-red-500 dark:text-red-400">Failed to load shopping list.</p>
           )}
 
           {/* Add input */}
@@ -55,6 +55,7 @@ export default function ShoppingPage() {
               Your shopping list is empty. Add an item above.
             </p>
           )}
+          {unchecked.length > 0 && (
           <ul className="space-y-1">
             {unchecked.map(item => (
               <li key={item.id} className="flex items-center gap-3 rounded-lg bg-white px-3 py-2.5 shadow-sm dark:bg-slate-800">
@@ -68,6 +69,7 @@ export default function ShoppingPage() {
               </li>
             ))}
           </ul>
+          )}
 
           {/* Done section */}
           {done.length > 0 && (
