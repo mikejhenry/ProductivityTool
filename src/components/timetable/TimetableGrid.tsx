@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect, useState, useMemo } from 'react'
 import { DndContext, DragEndEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { TimeBlock as TBType, Task } from '../../types'
 import { DayColumn, HOUR_HEIGHT } from './DayColumn'
@@ -104,8 +104,10 @@ export function TimetableGrid({ weekStart, blocks, tasks, onCreate, onUpdate, on
     })
   }
 
-  const dailyTasks = tasks.filter(t => t.type === 'daily')
-  const dailyTaskIds = new Set(tasks.filter(t => t.type === 'daily').map(t => t.id))
+  const { dailyTasks, dailyTaskIds } = useMemo(() => {
+    const dailyTasks = tasks.filter(t => t.type === 'daily')
+    return { dailyTasks, dailyTaskIds: new Set(dailyTasks.map(t => t.id)) }
+  }, [tasks])
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
