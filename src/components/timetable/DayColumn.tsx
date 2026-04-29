@@ -10,11 +10,12 @@ interface Props {
   weekStart: Date
   blocks: TBType[]
   dailyTasks: Task[]
+  dailyTaskIds: Set<string>
   onEdit: (block: TBType) => void
   onCellClick: (startTime: Date) => void
 }
 
-export function DayColumn({ dayIndex, weekStart, blocks, dailyTasks, onEdit, onCellClick }: Props) {
+export function DayColumn({ dayIndex, weekStart, blocks, dailyTasks, dailyTaskIds, onEdit, onCellClick }: Props) {
   const date = addDays(weekStart, dayIndex)
   const isToday = new Date().toDateString() === date.toDateString()
   const dayLabel = date.toLocaleDateString('en-US', { weekday: 'short', month: 'numeric', day: 'numeric' })
@@ -48,9 +49,13 @@ export function DayColumn({ dayIndex, weekStart, blocks, dailyTasks, onEdit, onC
           />
         ))}
 
-        {/* Suggested overlays for daily tasks with preferred_time */}
+        {/* Suggested overlays — hidden when a real block already exists for that task */}
         {dailyTasks
-          .filter(t => t.preferred_time && t.repeat_days.includes(date.getDay()))
+          .filter(t =>
+            t.preferred_time &&
+            t.repeat_days.includes(date.getDay()) &&
+            !blocks.some(b => b.task_id === t.id)
+          )
           .map(t => {
             const [h, m] = t.preferred_time!.split(':').map(Number)
             const topPct = ((h * 60 + m) / 1440) * 100
@@ -96,6 +101,7 @@ export function DayColumn({ dayIndex, weekStart, blocks, dailyTasks, onEdit, onC
               block={block}
               topPercent={topPct}
               heightPercent={heightPct}
+              isDaily={dailyTaskIds.has(block.task_id ?? '')}
               onEdit={onEdit}
             />
           )

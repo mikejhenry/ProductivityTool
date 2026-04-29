@@ -105,6 +105,7 @@ export function TimetableGrid({ weekStart, blocks, tasks, onCreate, onUpdate, on
   }
 
   const dailyTasks = tasks.filter(t => t.type === 'daily')
+  const dailyTaskIds = new Set(tasks.filter(t => t.type === 'daily').map(t => t.id))
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
@@ -145,6 +146,7 @@ export function TimetableGrid({ weekStart, blocks, tasks, onCreate, onUpdate, on
                 weekStart={weekStart}
                 blocks={blocksForDay(i)}
                 dailyTasks={dailyTasks}
+                dailyTaskIds={dailyTaskIds}
                 onEdit={handleEditBlock}
                 onCellClick={handleCellClick}
               />
