@@ -5,6 +5,8 @@ import { TodayTimeline } from '../components/dashboard/TodayTimeline'
 import { TaskChecklist } from '../components/dashboard/TaskChecklist'
 import { TaskModal } from '../components/tasks/TaskModal'
 import { ScheduledTaskModal, BlockPayload } from '../components/tasks/ScheduledTaskModal'
+import { DailyPanel } from '../components/daily/DailyPanel'
+import { DailyItemModal } from '../components/daily/DailyItemModal'
 import { useWeek } from '../contexts/WeekContext'
 import { useTimeBlocks } from '../hooks/useTimeBlocks'
 import { useTasks } from '../hooks/useTasks'
@@ -46,6 +48,7 @@ export default function TodayPage() {
   const { blocks, updateBlock, createBlock } = useTimeBlocks(weekStart)
   const { tasks, createTask, deleteTask } = useTasks()
   const [taskMode, setTaskMode] = useState<TaskMode>(null)
+  const [dailyModal, setDailyModal] = useState<{ task?: Task } | null>(null)
 
   const todayBlocks = blocks.filter(b =>
     new Date(b.start_time).toDateString() === new Date().toDateString()
@@ -107,12 +110,23 @@ export default function TodayPage() {
       <Navbar />
       <NotificationBanner blocks={blocks} />
       <div className="flex flex-1 flex-col overflow-hidden md:flex-row">
-        <TodayTimeline blocks={todayBlocks} onStatusChange={handleStatusChange} />
+        <TodayTimeline
+          blocks={todayBlocks}
+          onStatusChange={handleStatusChange}
+          onAddTask={() => setTaskMode('pick')}
+        />
         <TaskChecklist
           tasks={tasks}
           todayBlocks={todayBlocks}
           onToggle={handleToggle}
           onAddTask={() => setTaskMode('pick')}
+        />
+        <DailyPanel
+          tasks={tasks}
+          todayBlocks={todayBlocks}
+          onToggle={handleToggle}
+          onAdd={() => setDailyModal({})}
+          onEdit={task => setDailyModal({ task })}
         />
       </div>
       {taskMode === 'pick' && (
@@ -132,6 +146,13 @@ export default function TodayPage() {
         <ScheduledTaskModal
           onSave={handleCreateScheduledTask}
           onClose={() => setTaskMode(null)}
+        />
+      )}
+      {dailyModal !== null && (
+        <DailyItemModal
+          initial={dailyModal.task}
+          weekStart={weekStart}
+          onClose={() => setDailyModal(null)}
         />
       )}
     </div>
