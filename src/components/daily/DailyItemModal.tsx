@@ -33,22 +33,24 @@ export function DailyItemModal({ initial, weekStart, onClose }: Props) {
 
   async function createWeekBlocks(taskId: string, taskTitle: string, timeStr: string) {
     const [h, m] = timeStr.split(':').map(Number)
-    for (let i = 0; i < 7; i++) {
-      const day = addDays(weekStart, i)
-      const start = new Date(day)
-      start.setHours(h, m, 0, 0)
-      const end = new Date(start.getTime() + 60 * 60 * 1000)
-      await createBlock({
-        task_id: taskId,
-        title: taskTitle,
-        start_time: start.toISOString(),
-        end_time: end.toISOString(),
-        type: 'soft',
-        status: 'planned',
-        reminder_minutes: [],
-        color: null,
+    await Promise.all(
+      Array.from({ length: 7 }, (_, i) => {
+        const day = addDays(weekStart, i)
+        const start = new Date(day)
+        start.setHours(h, m, 0, 0)
+        const end = new Date(start.getTime() + 60 * 60 * 1000)
+        return createBlock({
+          task_id: taskId,
+          title: taskTitle,
+          start_time: start.toISOString(),
+          end_time: end.toISOString(),
+          type: 'soft',
+          status: 'planned',
+          reminder_minutes: [],
+          color: null,
+        })
       })
-    }
+    )
   }
 
   async function handleSave() {
@@ -59,7 +61,9 @@ export function DailyItemModal({ initial, weekStart, onClose }: Props) {
       if (initial) {
         // Edit path
         await updateTask({ id: initial.id, title: title.trim(), preferred_time: preferredTime })
-        const timeChanged = preferredTime !== initial.preferred_time
+        const normalizedOriginal = initial.preferred_time?.slice(0, 5) ?? null
+        const normalizedNew = scheduled && time ? time : null
+        const timeChanged = normalizedNew !== normalizedOriginal
         if (timeChanged) {
           const existing = getTaskBlocks(initial.id)
           await Promise.all(existing.map(b => deleteBlock(b.id)))
