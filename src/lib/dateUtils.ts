@@ -52,3 +52,11 @@ export function addDays(date: Date, days: number): Date {
   d.setDate(d.getDate() + days)
   return d
 }
+
+export function isSameDay(a: Date, b: Date): boolean {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  )
+}

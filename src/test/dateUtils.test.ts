@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import {
   getWeekStart, formatWeekRange,
   minutesFromMidnight, blockHeightPercent,
-  shiftBlockByDays,
+  shiftBlockByDays, isSameDay,
 } from '../lib/dateUtils'
 
 describe('getWeekStart', () => {
@@ -60,5 +60,28 @@ describe('formatWeekRange', () => {
       const endDay = parseInt(parts[1])
       expect(endDay - startDay).toBe(6)
     }
+  })
+})
+
+describe('isSameDay', () => {
+  it('returns true for two Date objects on the same local calendar day', () => {
+    const a = new Date(2026, 4, 1, 9, 0, 0)   // May 1 09:00 local
+    const b = new Date(2026, 4, 1, 23, 59, 0)  // May 1 23:59 local
+    expect(isSameDay(a, b)).toBe(true)
+  })
+  it('returns false for dates on different days', () => {
+    const a = new Date(2026, 4, 1, 23, 59, 0)  // May 1
+    const b = new Date(2026, 4, 2, 0, 0, 0)    // May 2
+    expect(isSameDay(a, b)).toBe(false)
+  })
+  it('returns false for same time but different months', () => {
+    const a = new Date(2026, 3, 1, 9, 0, 0)  // Apr 1
+    const b = new Date(2026, 4, 1, 9, 0, 0)  // May 1
+    expect(isSameDay(a, b)).toBe(false)
+  })
+  it('returns false for same day different years', () => {
+    const a = new Date(2025, 4, 1)
+    const b = new Date(2026, 4, 1)
+    expect(isSameDay(a, b)).toBe(false)
   })
 })
