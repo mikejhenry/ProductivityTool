@@ -13,6 +13,7 @@ export interface Task {
   type: 'daily' | 'flexible'
   preferred_time: string | null  // "HH:MM:SS"
   repeat_days: number[]          // 0=Sun…6=Sat
+  completed_at: string | null    // ISO timestamp; null = not done
   created_at: string
 }
 

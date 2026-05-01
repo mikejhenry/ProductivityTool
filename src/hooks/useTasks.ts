@@ -65,10 +65,39 @@ export function useTasks() {
     onSuccess: () => qc.invalidateQueries({ queryKey: key }),
   })
 
+  const toggleTask = useMutation({
+    mutationFn: async ({ id, done }: { id: string; done: boolean }) => {
+      const patch = { completed_at: done ? new Date().toISOString() : null }
+      const { error } = await supabase
+        .from('tasks')
+        .update(patch)
+        .eq('id', id)
+        .eq('user_id', uid!)
+      if (error) throw error
+    },
+    onMutate: async ({ id, done }) => {
+      await qc.cancelQueries({ queryKey: key })
+      const previous = qc.getQueryData<Task[]>(key)
+      qc.setQueryData<Task[]>(key, old =>
+        old?.map(t =>
+          t.id === id
+            ? { ...t, completed_at: done ? new Date().toISOString() : null }
+            : t
+        ) ?? []
+      )
+      return { previous }
+    },
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.previous) qc.setQueryData(key, ctx.previous)
+    },
+    onSettled: () => qc.invalidateQueries({ queryKey: key }),
+  })
+
   return {
     tasks,
     createTask: createTask.mutateAsync,
     updateTask: updateTask.mutateAsync,
     deleteTask: deleteTask.mutateAsync,
+    toggleTask: toggleTask.mutateAsync,
   }
 }
