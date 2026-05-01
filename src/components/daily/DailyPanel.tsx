@@ -1,22 +1,18 @@
-// src/components/daily/DailyPanel.tsx
-import { Task, TimeBlock } from '../../types'
+import { isSameDay } from '../../lib/dateUtils'
+import { Task } from '../../types'
 
 interface Props {
   tasks: Task[]
-  todayBlocks: TimeBlock[]
-  onToggle: (blockId: string, done: boolean) => void
+  onToggle: (taskId: string, done: boolean) => void
   onAdd: () => void
   onEdit: (task: Task) => void
 }
 
-export function DailyPanel({ tasks, todayBlocks, onToggle, onAdd, onEdit }: Props) {
+export function DailyPanel({ tasks, onToggle, onAdd, onEdit }: Props) {
   const dailyTasks = tasks.filter(t => t.type === 'daily')
 
   const isTaskDone = (task: Task) =>
-    todayBlocks.some(b => b.task_id === task.id && b.status === 'completed')
-
-  const blockForTask = (task: Task) =>
-    todayBlocks.find(b => b.task_id === task.id)
+    !!task.completed_at && isSameDay(new Date(task.completed_at), new Date())
 
   return (
     <aside className="w-full overflow-y-auto border-t border-gray-200 bg-gray-50 p-3 dark:border-slate-700 dark:bg-slate-900 md:w-64 md:border-l md:border-t-0 md:p-4">
@@ -38,14 +34,12 @@ export function DailyPanel({ tasks, todayBlocks, onToggle, onAdd, onEdit }: Prop
       <div className="space-y-2">
         {dailyTasks.map(task => {
           const done = isTaskDone(task)
-          const block = blockForTask(task)
           return (
             <div key={task.id} className="flex items-center gap-2">
               <input
                 type="checkbox"
                 checked={done}
-                disabled={!block}
-                onChange={e => block && onToggle(block.id, e.target.checked)}
+                onChange={e => onToggle(task.id, e.target.checked)}
                 className="h-5 w-5 rounded border-gray-300 text-indigo-600 sm:h-4 sm:w-4"
               />
               <button
