@@ -1,9 +1,10 @@
+import { isSameDay } from '../../lib/dateUtils'
 import { Task, TimeBlock } from '../../types'
 
 interface Props {
   tasks: Task[]
   todayBlocks: TimeBlock[]
-  onToggle: (blockId: string, done: boolean) => void
+  onToggle: (taskId: string, done: boolean) => void
   onAddTask?: () => void
 }
 
@@ -13,10 +14,11 @@ export function TaskChecklist({ tasks, todayBlocks, onToggle, onAddTask }: Props
   const linkedTaskIds = new Set(todayBlocks.map(b => b.task_id).filter((id): id is string => id !== null))
   const linkedFlexible = tasks.filter(t => t.type === 'flexible' && linkedTaskIds.has(t.id))
 
-  const isTaskDone = (task: Task) =>
-    todayBlocks.some(b => b.task_id === task.id && b.status === 'completed')
-
-  const blockForTask = (task: Task) => todayBlocks.find(b => b.task_id === task.id)
+  const isTaskDone = (task: Task) => {
+    if (!task.completed_at) return false
+    if (task.type === 'daily') return isSameDay(new Date(task.completed_at), new Date())
+    return true
+  }
 
   const allTasks = [...dailyTasks, ...linkedFlexible]
 
@@ -38,14 +40,12 @@ export function TaskChecklist({ tasks, todayBlocks, onToggle, onAddTask }: Props
       <div className="space-y-2">
         {allTasks.map(task => {
           const done = isTaskDone(task)
-          const block = blockForTask(task)
           return (
             <label key={task.id} className="flex cursor-pointer items-center gap-2">
               <input
                 type="checkbox"
                 checked={done}
-                disabled={!block}
-                onChange={e => block && onToggle(block.id, e.target.checked)}
+                onChange={e => onToggle(task.id, e.target.checked)}
                 className="h-5 w-5 rounded border-gray-300 text-indigo-600 sm:h-4 sm:w-4"
               />
               <span className={`text-sm ${done ? 'text-gray-400 line-through' : 'text-gray-800 dark:text-gray-200'}`}>
