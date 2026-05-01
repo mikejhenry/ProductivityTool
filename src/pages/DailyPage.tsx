@@ -4,22 +4,16 @@ import { Navbar } from '../components/layout/Navbar'
 import { DailyPanel } from '../components/daily/DailyPanel'
 import { DailyItemModal } from '../components/daily/DailyItemModal'
 import { useWeek } from '../contexts/WeekContext'
-import { useTimeBlocks } from '../hooks/useTimeBlocks'
 import { useTasks } from '../hooks/useTasks'
 import { Task } from '../types'
 
 export default function DailyPage() {
   const { weekStart } = useWeek()
-  const { blocks, updateBlock } = useTimeBlocks(weekStart)
-  const { tasks } = useTasks()
+  const { tasks, toggleTask } = useTasks()
   const [modal, setModal] = useState<{ task?: Task } | null>(null)
 
-  const todayBlocks = blocks.filter(
-    b => new Date(b.start_time).toDateString() === new Date().toDateString()
-  )
-
-  function handleToggle(blockId: string, done: boolean) {
-    updateBlock({ id: blockId, status: done ? 'completed' : 'planned' })
+  function handleToggle(taskId: string, done: boolean) {
+    toggleTask({ id: taskId, done })
   }
 
   return (
@@ -29,7 +23,6 @@ export default function DailyPage() {
         <div className="mx-auto w-full max-w-lg overflow-y-auto p-4">
           <DailyPanel
             tasks={tasks}
-            todayBlocks={todayBlocks}
             onToggle={handleToggle}
             onAdd={() => setModal({})}
             onEdit={task => setModal({ task })}

@@ -46,7 +46,7 @@ function TypePickerModal({ onNormal, onScheduled, onClose }: TypePickerModalProp
 export default function TodayPage() {
   const { weekStart } = useWeek()
   const { blocks, updateBlock, createBlock } = useTimeBlocks(weekStart)
-  const { tasks, createTask, deleteTask } = useTasks()
+  const { tasks, createTask, deleteTask, toggleTask } = useTasks()
   const [taskMode, setTaskMode] = useState<TaskMode>(null)
   const [dailyModal, setDailyModal] = useState<{ task?: Task } | null>(null)
 
@@ -58,8 +58,8 @@ export default function TodayPage() {
     updateBlock({ id, status })
   }
 
-  function handleToggle(blockId: string, done: boolean) {
-    updateBlock({ id: blockId, status: done ? 'completed' : 'planned' })
+  function handleToggle(taskId: string, done: boolean) {
+    toggleTask({ id: taskId, done })
   }
 
   async function handleCreateNormalTask(payload: Omit<Task, 'id' | 'user_id' | 'created_at'>) {
@@ -123,7 +123,6 @@ export default function TodayPage() {
         />
         <DailyPanel
           tasks={tasks}
-          todayBlocks={todayBlocks}
           onToggle={handleToggle}
           onAdd={() => setDailyModal({})}
           onEdit={task => setDailyModal({ task })}
