@@ -47,7 +47,7 @@ export function TimeBlock({ block, topPercent, heightPercent, isDaily = false, o
     <div
       ref={setNodeRef}
       style={style}
-      className={`absolute left-0.5 right-0.5 cursor-grab overflow-hidden rounded px-1.5 py-0.5 select-none ${isDaily ? '' : typeStyle} ${STATUS_STYLE[block.status]} ${textColor}`}
+      className={`absolute left-0.5 right-0.5 cursor-grab overflow-hidden rounded px-1.5 py-0.5 select-none hover:brightness-110 transition-[filter] ${isDaily ? '' : typeStyle} ${STATUS_STYLE[block.status]} ${textColor}`}
       {...listeners}
       {...attributes}
       onDoubleClick={() => onEdit(block)}
