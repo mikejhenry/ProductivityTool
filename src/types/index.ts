@@ -14,7 +14,7 @@ export interface Task {
   preferred_time: string | null  // "HH:MM:SS"
   repeat_days: number[]          // 0=Sun…6=Sat
   completed_at: string | null    // ISO timestamp; null = not done
-  sort_order: number
+  sort_order: number             // ascending; lower = earlier in list
   created_at: string
 }
 
