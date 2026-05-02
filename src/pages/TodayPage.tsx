@@ -125,6 +125,7 @@ export default function TodayPage() {
         <DailyPanel
           tasks={tasks}
           onToggle={handleToggle}
+          onReorder={ids => reorderTasks(ids).catch(e => console.error('Failed to reorder tasks', e))}
           onAdd={() => setDailyModal({})}
           onEdit={task => setDailyModal({ task })}
         />

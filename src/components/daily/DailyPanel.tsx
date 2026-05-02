@@ -1,18 +1,88 @@
+import { DndContext, closestCenter, DragEndEvent } from '@dnd-kit/core'
+import { SortableContext, verticalListSortingStrategy, arrayMove, useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import { isSameDay } from '../../lib/dateUtils'
 import { Task } from '../../types'
 
 interface Props {
   tasks: Task[]
   onToggle: (taskId: string, done: boolean) => void
+  onReorder: (orderedIds: string[]) => void
   onAdd: () => void
   onEdit: (task: Task) => void
 }
 
-export function DailyPanel({ tasks, onToggle, onAdd, onEdit }: Props) {
+interface SortableDailyRowProps {
+  task: Task
+  done: boolean
+  onToggle: (taskId: string, done: boolean) => void
+  onEdit: (task: Task) => void
+}
+
+function SortableDailyRow({ task, done, onToggle, onEdit }: SortableDailyRowProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: task.id,
+  })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  }
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="flex cursor-default items-center gap-2 rounded px-1 py-0.5 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+    >
+      <span
+        {...attributes}
+        {...listeners}
+        className="cursor-grab px-1 text-gray-300 hover:text-gray-500 dark:text-slate-600 dark:hover:text-slate-400 select-none"
+        aria-label="Drag to reorder"
+      >
+        ⠿
+      </span>
+      <input
+        type="checkbox"
+        checked={done}
+        onChange={e => onToggle(task.id, e.target.checked)}
+        className="h-5 w-5 rounded border-gray-300 text-indigo-600 sm:h-4 sm:w-4"
+      />
+      <button
+        type="button"
+        onClick={() => onEdit(task)}
+        className={`flex-1 text-left text-sm ${done ? 'text-gray-400 line-through' : 'text-gray-800 dark:text-gray-200'}`}
+      >
+        {task.title}
+      </button>
+      {task.preferred_time && (
+        <span className="shrink-0 text-xs text-indigo-500 dark:text-indigo-400">
+          {task.preferred_time.slice(0, 5)}
+        </span>
+      )}
+    </div>
+  )
+}
+
+export function DailyPanel({ tasks, onToggle, onReorder, onAdd, onEdit }: Props) {
   const dailyTasks = tasks.filter(t => t.type === 'daily')
 
   const isTaskDone = (task: Task) =>
     !!task.completed_at && isSameDay(new Date(task.completed_at), new Date())
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+    const oldIndex = dailyTasks.findIndex(t => t.id === active.id)
+    const newIndex = dailyTasks.findIndex(t => t.id === over.id)
+    const reorderedVisible = arrayMove(dailyTasks, oldIndex, newIndex)
+    // Merge back into full task list so sort_order is written for every task
+    const visibleIds = new Set(dailyTasks.map(t => t.id))
+    const remaining = tasks.filter(t => !visibleIds.has(t.id))
+    onReorder([...reorderedVisible, ...remaining].map(t => t.id))
+  }
 
   return (
     <aside className="w-full overflow-y-auto border-t border-gray-200 bg-gray-50 p-3 dark:border-slate-700 dark:bg-slate-900 md:w-64 md:border-l md:border-t-0 md:p-4">
@@ -31,33 +101,21 @@ export function DailyPanel({ tasks, onToggle, onAdd, onEdit }: Props) {
           No daily routines yet. Add one to get started.
         </p>
       )}
-      <div className="space-y-2">
-        {dailyTasks.map(task => {
-          const done = isTaskDone(task)
-          return (
-            <div key={task.id} className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={done}
-                onChange={e => onToggle(task.id, e.target.checked)}
-                className="h-5 w-5 rounded border-gray-300 text-indigo-600 sm:h-4 sm:w-4"
+      <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
+        <SortableContext items={dailyTasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
+          <div className="space-y-1">
+            {dailyTasks.map(task => (
+              <SortableDailyRow
+                key={task.id}
+                task={task}
+                done={isTaskDone(task)}
+                onToggle={onToggle}
+                onEdit={onEdit}
               />
-              <button
-                type="button"
-                onClick={() => onEdit(task)}
-                className={`flex-1 text-left text-sm ${done ? 'text-gray-400 line-through' : 'text-gray-800 dark:text-gray-200'}`}
-              >
-                {task.title}
-              </button>
-              {task.preferred_time && (
-                <span className="shrink-0 text-xs text-indigo-500 dark:text-indigo-400">
-                  {task.preferred_time.slice(0, 5)}
-                </span>
-              )}
-            </div>
-          )
-        })}
-      </div>
+            ))}
+          </div>
+        </SortableContext>
+      </DndContext>
     </aside>
   )
 }

@@ -9,7 +9,7 @@ import { Task } from '../types'
 
 export default function DailyPage() {
   const { weekStart } = useWeek()
-  const { tasks, toggleTask } = useTasks()
+  const { tasks, toggleTask, reorderTasks } = useTasks()
   const [modal, setModal] = useState<{ task?: Task } | null>(null)
 
   function handleToggle(taskId: string, done: boolean) {
@@ -24,6 +24,7 @@ export default function DailyPage() {
           <DailyPanel
             tasks={tasks}
             onToggle={handleToggle}
+            onReorder={ids => reorderTasks(ids).catch(e => console.error('Failed to reorder tasks', e))}
             onAdd={() => setModal({})}
             onEdit={task => setModal({ task })}
           />
