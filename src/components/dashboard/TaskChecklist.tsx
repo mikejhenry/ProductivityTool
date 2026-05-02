@@ -75,8 +75,11 @@ export function TaskChecklist({ tasks, todayBlocks, onToggle, onReorder, onAddTa
     if (!over || active.id === over.id) return
     const oldIndex = allTasks.findIndex(t => t.id === active.id)
     const newIndex = allTasks.findIndex(t => t.id === over.id)
-    const reordered = arrayMove(allTasks, oldIndex, newIndex)
-    onReorder(reordered.map(t => t.id))
+    const reorderedVisible = arrayMove(allTasks, oldIndex, newIndex)
+    // Merge back into the full tasks list so sort_order is written for every task
+    const visibleIds = new Set(allTasks.map(t => t.id))
+    const remaining = tasks.filter(t => !visibleIds.has(t.id))
+    onReorder([...reorderedVisible, ...remaining].map(t => t.id))
   }
 
   return (
