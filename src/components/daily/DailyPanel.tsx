@@ -77,11 +77,8 @@ export function DailyPanel({ tasks, onToggle, onReorder, onAdd, onEdit }: Props)
     if (!over || active.id === over.id) return
     const oldIndex = dailyTasks.findIndex(t => t.id === active.id)
     const newIndex = dailyTasks.findIndex(t => t.id === over.id)
-    const reorderedVisible = arrayMove(dailyTasks, oldIndex, newIndex)
-    // Merge back into full task list so sort_order is written for every task
-    const visibleIds = new Set(dailyTasks.map(t => t.id))
-    const remaining = tasks.filter(t => !visibleIds.has(t.id))
-    onReorder([...reorderedVisible, ...remaining].map(t => t.id))
+    const reordered = arrayMove(dailyTasks, oldIndex, newIndex)
+    onReorder(reordered.map(t => t.id))
   }
 
   return (
