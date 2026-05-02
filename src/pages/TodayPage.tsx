@@ -46,7 +46,7 @@ function TypePickerModal({ onNormal, onScheduled, onClose }: TypePickerModalProp
 export default function TodayPage() {
   const { weekStart } = useWeek()
   const { blocks, updateBlock, createBlock } = useTimeBlocks(weekStart)
-  const { tasks, createTask, deleteTask, toggleTask } = useTasks()
+  const { tasks, createTask, deleteTask, toggleTask, reorderTasks } = useTasks()
   const [taskMode, setTaskMode] = useState<TaskMode>(null)
   const [dailyModal, setDailyModal] = useState<{ task?: Task } | null>(null)
 
@@ -119,6 +119,7 @@ export default function TodayPage() {
           tasks={tasks}
           todayBlocks={todayBlocks}
           onToggle={handleToggle}
+          onReorder={ids => reorderTasks(ids).catch(e => console.error('Failed to reorder tasks', e))}
           onAddTask={() => setTaskMode('pick')}
         />
         <DailyPanel
