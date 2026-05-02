@@ -113,9 +113,12 @@ export function useTasks() {
     onMutate: async (orderedIds) => {
       await qc.cancelQueries({ queryKey: key })
       const previous = qc.getQueryData<Task[]>(key)
-      qc.setQueryData<Task[]>(key, old =>
-        old ? reorderByIds(old, orderedIds) : []
-      )
+      qc.setQueryData<Task[]>(key, old => {
+        if (!old) return []
+        const reordered = reorderByIds(old, orderedIds)
+        const untouched = old.filter(t => !orderedIds.includes(t.id))
+        return [...reordered, ...untouched]
+      })
       return { previous }
     },
     onError: (_err, _vars, ctx) => {

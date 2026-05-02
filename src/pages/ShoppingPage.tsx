@@ -38,8 +38,8 @@ function SortableShoppingRow({ item, onToggle }: SortableShoppingRowProps) {
       </span>
       <input
         type="checkbox"
-        checked={false}
-        onChange={() => onToggle(item.id, true)}
+        checked={item.checked}
+        onChange={() => onToggle(item.id, !item.checked)}
         className="h-4 w-4 cursor-pointer rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
       />
       <span className="flex-1 text-sm text-gray-800 dark:text-gray-200">{item.name}</span>
@@ -95,6 +95,7 @@ export default function ShoppingPage() {
               onKeyDown={handleKeyDown}
             />
             <button
+              type="button"
               onClick={handleAdd}
               disabled={!input.trim()}
               className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-40"

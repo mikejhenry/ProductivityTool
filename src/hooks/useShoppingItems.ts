@@ -86,9 +86,12 @@ export function useShoppingItems() {
     onMutate: async (orderedIds) => {
       await qc.cancelQueries({ queryKey: key })
       const previous = qc.getQueryData<ShoppingItem[]>(key)
-      qc.setQueryData<ShoppingItem[]>(key, old =>
-        old ? reorderByIds(old, orderedIds) : []
-      )
+      qc.setQueryData<ShoppingItem[]>(key, old => {
+        if (!old) return []
+        const reordered = reorderByIds(old, orderedIds)
+        const untouched = old.filter(i => !orderedIds.includes(i.id))
+        return [...reordered, ...untouched]
+      })
       return { previous }
     },
     onError: (_err, _vars, ctx) => {
