@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { ShoppingItem } from '../types'
+import { reorderByIds } from '../lib/reorderUtils'
 
 export function useShoppingItems() {
   const { session } = useAuth()
@@ -16,7 +17,7 @@ export function useShoppingItems() {
         .from('shopping_items')
         .select('*')
         .eq('user_id', uid!)
-        .order('created_at', { ascending: true })
+        .order('sort_order')
       if (error) throw error
       return data
     },
@@ -67,6 +68,35 @@ export function useShoppingItems() {
     onSuccess: () => qc.invalidateQueries({ queryKey: key }),
   })
 
+  const reorderItems = useMutation({
+    mutationFn: async (orderedIds: string[]) => {
+      if (!uid) throw new Error('Not authenticated')
+      const results = await Promise.all(
+        orderedIds.map((id, index) =>
+          supabase
+            .from('shopping_items')
+            .update({ sort_order: index })
+            .eq('id', id)
+            .eq('user_id', uid!)
+        )
+      )
+      const failed = results.find(r => r.error)
+      if (failed?.error) throw failed.error
+    },
+    onMutate: async (orderedIds) => {
+      await qc.cancelQueries({ queryKey: key })
+      const previous = qc.getQueryData<ShoppingItem[]>(key)
+      qc.setQueryData<ShoppingItem[]>(key, old =>
+        old ? reorderByIds(old, orderedIds) : []
+      )
+      return { previous }
+    },
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.previous) qc.setQueryData(key, ctx.previous)
+    },
+    onSettled: () => qc.invalidateQueries({ queryKey: key }),
+  })
+
   return {
     items,
     loadError,
@@ -74,5 +104,6 @@ export function useShoppingItems() {
     toggleItem: toggleItem.mutateAsync,
     deleteItem: deleteItem.mutateAsync,
     clearDone: clearDone.mutateAsync,
+    reorderItems: reorderItems.mutateAsync,
   }
 }

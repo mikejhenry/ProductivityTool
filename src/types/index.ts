@@ -46,6 +46,7 @@ export interface ShoppingItem {
   user_id: string
   name: string
   checked: boolean
+  sort_order: number             // ascending; lower = earlier in list
   created_at: string
 }
 
