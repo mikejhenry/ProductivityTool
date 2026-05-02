@@ -62,7 +62,7 @@ export default function TodayPage() {
     toggleTask({ id: taskId, done })
   }
 
-  async function handleCreateNormalTask(payload: Omit<Task, 'id' | 'user_id' | 'created_at'>) {
+  async function handleCreateNormalTask(payload: Omit<Task, 'id' | 'user_id' | 'created_at' | 'completed_at'>) {
     try {
       await createTask(payload)
       setTaskMode(null)
@@ -72,7 +72,7 @@ export default function TodayPage() {
   }
 
   async function handleCreateScheduledTask(
-    taskPayload: Omit<Task, 'id' | 'user_id' | 'created_at'>,
+    taskPayload: Omit<Task, 'id' | 'user_id' | 'created_at' | 'completed_at'>,
     blockPayload: BlockPayload
   ) {
     let newTask: Task | undefined

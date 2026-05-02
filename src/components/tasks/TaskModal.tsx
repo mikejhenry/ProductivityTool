@@ -4,7 +4,7 @@ import { DAYS_OF_WEEK } from '../../lib/constants'
 
 interface Props {
   initial?: Partial<Task>
-  onSave: (t: Omit<Task, 'id' | 'user_id' | 'created_at'>) => void | Promise<void>
+  onSave: (t: Omit<Task, 'id' | 'user_id' | 'created_at' | 'completed_at'>) => void | Promise<void>
   onDelete?: () => void
   onClose: () => void
 }

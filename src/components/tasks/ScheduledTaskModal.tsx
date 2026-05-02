@@ -15,7 +15,7 @@ export interface BlockPayload {
 
 interface Props {
   onSave: (
-    task: Omit<Task, 'id' | 'user_id' | 'created_at'>,
+    task: Omit<Task, 'id' | 'user_id' | 'created_at' | 'completed_at'>,
     block: BlockPayload
   ) => void | Promise<void>
   onClose: () => void
@@ -49,7 +49,7 @@ export function ScheduledTaskModal({ onSave, onClose }: Props) {
   function handleSave() {
     if (!title.trim()) return
     if (startTime && endTime && endTime <= startTime) return
-    const task: Omit<Task, 'id' | 'user_id' | 'created_at'> = {
+    const task: Omit<Task, 'id' | 'user_id' | 'created_at' | 'completed_at'> = {
       title: title.trim(),
       type: repeats ? 'daily' : 'flexible',
       preferred_time: startTime ? `${startTime}:00` : null,
