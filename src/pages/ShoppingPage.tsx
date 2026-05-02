@@ -1,9 +1,54 @@
 import { useState } from 'react'
+import { DndContext, closestCenter, DragEndEvent } from '@dnd-kit/core'
+import { SortableContext, verticalListSortingStrategy, arrayMove, useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import { Navbar } from '../components/layout/Navbar'
 import { useShoppingItems } from '../hooks/useShoppingItems'
+import { ShoppingItem } from '../types'
+
+interface SortableShoppingRowProps {
+  item: ShoppingItem
+  onToggle: (id: string, checked: boolean) => void
+}
+
+function SortableShoppingRow({ item, onToggle }: SortableShoppingRowProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: item.id,
+  })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  }
+
+  return (
+    <li
+      ref={setNodeRef}
+      style={style}
+      className="flex items-center gap-3 rounded-lg bg-white px-3 py-2.5 shadow-sm dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors"
+    >
+      <span
+        {...attributes}
+        {...listeners}
+        className="cursor-grab text-gray-300 hover:text-gray-500 dark:text-slate-600 dark:hover:text-slate-400 select-none"
+        aria-label="Drag to reorder"
+      >
+        ⠿
+      </span>
+      <input
+        type="checkbox"
+        checked={false}
+        onChange={() => onToggle(item.id, true)}
+        className="h-4 w-4 cursor-pointer rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+      />
+      <span className="flex-1 text-sm text-gray-800 dark:text-gray-200">{item.name}</span>
+    </li>
+  )
+}
 
 export default function ShoppingPage() {
-  const { items, loadError, addItem, toggleItem, deleteItem, clearDone } = useShoppingItems()
+  const { items, loadError, addItem, toggleItem, deleteItem, clearDone, reorderItems } = useShoppingItems()
   const [input, setInput] = useState('')
 
   const unchecked = items.filter(i => !i.checked)
@@ -18,6 +63,15 @@ export default function ShoppingPage() {
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Enter') handleAdd()
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+    const oldIndex = unchecked.findIndex(i => i.id === active.id)
+    const newIndex = unchecked.findIndex(i => i.id === over.id)
+    const reordered = arrayMove(unchecked, oldIndex, newIndex)
+    reorderItems(reordered.map(i => i.id)).catch(e => console.error('Failed to reorder items', e))
   }
 
   return (
@@ -56,19 +110,21 @@ export default function ShoppingPage() {
             </p>
           )}
           {unchecked.length > 0 && (
-          <ul className="space-y-1">
-            {unchecked.map(item => (
-              <li key={item.id} className="flex items-center gap-3 rounded-lg bg-white px-3 py-2.5 shadow-sm dark:bg-slate-800">
-                <input
-                  type="checkbox"
-                  checked={false}
-                  onChange={() => toggleItem({ id: item.id, checked: true }).catch(e => console.warn('Failed to toggle item', e))}
-                  className="h-4 w-4 cursor-pointer rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                />
-                <span className="flex-1 text-sm text-gray-800 dark:text-gray-200">{item.name}</span>
-              </li>
-            ))}
-          </ul>
+            <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
+              <SortableContext items={unchecked.map(i => i.id)} strategy={verticalListSortingStrategy}>
+                <ul className="space-y-1">
+                  {unchecked.map(item => (
+                    <SortableShoppingRow
+                      key={item.id}
+                      item={item}
+                      onToggle={(id, checked) =>
+                        toggleItem({ id, checked }).catch(e => console.warn('Failed to toggle item', e))
+                      }
+                    />
+                  ))}
+                </ul>
+              </SortableContext>
+            </DndContext>
           )}
 
           {/* Done section */}
@@ -85,7 +141,10 @@ export default function ShoppingPage() {
               </div>
               <ul className="space-y-1">
                 {done.map(item => (
-                  <li key={item.id} className="flex items-center gap-3 rounded-lg bg-white px-3 py-2.5 shadow-sm dark:bg-slate-800">
+                  <li
+                    key={item.id}
+                    className="flex items-center gap-3 rounded-lg bg-white px-3 py-2.5 shadow-sm dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors"
+                  >
                     <input
                       type="checkbox"
                       checked={true}
