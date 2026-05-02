@@ -134,6 +134,7 @@ export default function ShoppingPage() {
               <div className="mb-2 flex items-center justify-between">
                 <span className="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Done</span>
                 <button
+                  type="button"
                   onClick={() => clearDone().catch(e => console.warn('Failed to clear done', e))}
                   className="text-xs text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400"
                 >
@@ -154,6 +155,7 @@ export default function ShoppingPage() {
                     />
                     <span className="flex-1 text-sm text-gray-400 line-through dark:text-gray-500">{item.name}</span>
                     <button
+                      type="button"
                       onClick={() => deleteItem(item.id).catch(e => console.warn('Failed to delete item', e))}
                       className="text-gray-300 hover:text-red-500 dark:text-gray-600 dark:hover:text-red-400"
                       title="Delete item"
