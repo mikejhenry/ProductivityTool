@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { Task } from '../types'
+import { reorderByIds } from '../lib/reorderUtils'
 
 export function useTasks() {
   const { session } = useAuth()
@@ -16,7 +17,7 @@ export function useTasks() {
         .from('tasks')
         .select('*')
         .eq('user_id', uid!)
-        .order('created_at')
+        .order('sort_order')
       if (error) throw error
       return data
     },
@@ -52,7 +53,6 @@ export function useTasks() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: key })
-      // Invalidate all week block queries (prefix match) so every view reflects the new title
       qc.invalidateQueries({ queryKey: ['blocks'] })
     },
   })
@@ -93,11 +93,38 @@ export function useTasks() {
     onSettled: () => qc.invalidateQueries({ queryKey: key }),
   })
 
+  const reorderTasks = useMutation({
+    mutationFn: async (orderedIds: string[]) => {
+      await Promise.all(
+        orderedIds.map((id, index) =>
+          supabase
+            .from('tasks')
+            .update({ sort_order: index })
+            .eq('id', id)
+            .eq('user_id', uid!)
+        )
+      )
+    },
+    onMutate: async (orderedIds) => {
+      await qc.cancelQueries({ queryKey: key })
+      const previous = qc.getQueryData<Task[]>(key)
+      qc.setQueryData<Task[]>(key, old =>
+        old ? reorderByIds(old, orderedIds) : []
+      )
+      return { previous }
+    },
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.previous) qc.setQueryData(key, ctx.previous)
+    },
+    onSettled: () => qc.invalidateQueries({ queryKey: key }),
+  })
+
   return {
     tasks,
     createTask: createTask.mutateAsync,
     updateTask: updateTask.mutateAsync,
     deleteTask: deleteTask.mutateAsync,
     toggleTask: toggleTask.mutateAsync,
+    reorderTasks: reorderTasks.mutateAsync,
   }
 }
