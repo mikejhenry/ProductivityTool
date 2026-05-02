@@ -7,7 +7,7 @@ interface Props {
   tasks: Task[]
   open: boolean
   onClose: () => void
-  onCreate: (t: Omit<Task, 'id' | 'user_id' | 'created_at' | 'completed_at'>) => Promise<Task>
+  onCreate: (t: Omit<Task, 'id' | 'user_id' | 'created_at' | 'completed_at' | 'sort_order'>) => Promise<Task>
   onUpdate: (patch: Partial<Task> & { id: string }) => Promise<void>
   onDelete: (id: string) => Promise<void>
 }

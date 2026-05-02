@@ -25,7 +25,7 @@ export function useTasks() {
   })
 
   const createTask = useMutation({
-    mutationFn: async (task: Omit<Task, 'id' | 'user_id' | 'created_at' | 'completed_at'>) => {
+    mutationFn: async (task: Omit<Task, 'id' | 'user_id' | 'created_at' | 'completed_at' | 'sort_order'>) => {
       const { data, error } = await supabase
         .from('tasks')
         .insert({ ...task, user_id: uid! })
@@ -53,6 +53,7 @@ export function useTasks() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: key })
+      // Invalidate all week block queries (prefix match) so every view reflects the new title
       qc.invalidateQueries({ queryKey: ['blocks'] })
     },
   })
@@ -95,7 +96,8 @@ export function useTasks() {
 
   const reorderTasks = useMutation({
     mutationFn: async (orderedIds: string[]) => {
-      await Promise.all(
+      if (!uid) throw new Error('Not authenticated')
+      const results = await Promise.all(
         orderedIds.map((id, index) =>
           supabase
             .from('tasks')
@@ -104,6 +106,8 @@ export function useTasks() {
             .eq('user_id', uid!)
         )
       )
+      const failed = results.find(r => r.error)
+      if (failed?.error) throw failed.error
     },
     onMutate: async (orderedIds) => {
       await qc.cancelQueries({ queryKey: key })
