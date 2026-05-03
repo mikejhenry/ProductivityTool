@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useProfile } from '../hooks/useProfile'
+import { useNotificationSettings } from '../hooks/useNotificationSettings'
+import { ToggleSwitch } from '../components/settings/ToggleSwitch'
 import { Navbar } from '../components/layout/Navbar'
 
 export default function SettingsPage() {
@@ -8,6 +10,9 @@ export default function SettingsPage() {
   const [email, setEmail] = useState(profile?.email ?? '')
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
+
+  const { permission, paused, enabled, supported, requestPermission, setPaused } =
+    useNotificationSettings()
 
   async function handleSaveEmail() {
     setError('')
@@ -17,6 +22,24 @@ export default function SettingsPage() {
     } catch (e: any) {
       setError(e.message)
     }
+  }
+
+  async function handleToggle() {
+    if (permission === 'default') {
+      const result = await requestPermission()
+      if (result === 'granted') setPaused(false)
+    } else if (permission === 'granted') {
+      setPaused(!paused)
+    }
+    // 'denied': toggle is disabled, handler never fires
+  }
+
+  function notifStatusText(): string {
+    if (!supported) return 'Not supported in this browser'
+    if (permission === 'denied') return 'Blocked in browser — enable in browser settings'
+    if (permission === 'granted' && paused) return 'Notifications are paused'
+    if (permission === 'granted') return 'Notifications are on'
+    return 'Click to enable notifications'
   }
 
   return (
@@ -51,15 +74,15 @@ export default function SettingsPage() {
 
         <div className="mb-6">
           <h2 className="mb-2 text-sm font-semibold text-gray-700 dark:text-gray-300">Notifications</h2>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            {'Notification' in window
-              ? Notification.permission === 'granted'
-                ? '✓ Notifications enabled'
-                : Notification.permission === 'denied'
-                  ? 'Notifications blocked — enable in browser settings'
-                  : 'Notifications not yet enabled'
-              : 'Notifications not supported in this browser'}
-          </p>
+          <div className="flex items-center justify-between gap-4">
+            <p className="text-xs text-gray-500 dark:text-gray-400">{notifStatusText()}</p>
+            <ToggleSwitch
+              checked={enabled}
+              disabled={permission === 'denied' || !supported}
+              label="Enable notifications"
+              onChange={handleToggle}
+            />
+          </div>
         </div>
 
         <Link to="/app/today" className="text-sm text-indigo-600 underline dark:text-indigo-400">
