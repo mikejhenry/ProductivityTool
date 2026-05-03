@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react'
+import { renderHook, act } from '@testing-library/react'
 import { useNotifications } from '../hooks/useNotifications'
 import type { TimeBlock } from '../types'
 
@@ -26,9 +26,13 @@ beforeAll(() => {
   })
 })
 
+let mockRequestPermission: any
+
 beforeEach(() => {
   localStorage.clear()
   mockPostMessage.mockClear()
+  mockRequestPermission = (window.Notification as any).requestPermission
+  mockRequestPermission.mockResolvedValue('granted')
 })
 
 const block: TimeBlock = {
@@ -60,5 +64,16 @@ describe('useNotifications paused guard', () => {
     renderHook(() => useNotifications([block]))
     await new Promise(r => setTimeout(r, 50))
     expect(mockPostMessage).toHaveBeenCalledWith({ type: 'SCHEDULE', blocks: [block] })
+  })
+
+  it('does not post SCHEDULE after requestPermission when notif-paused is set', async () => {
+    localStorage.setItem('notif-paused', 'true')
+    ;(window.Notification as any).permission = 'default'
+    const { result } = renderHook(() => useNotifications([block]))
+    ;(window.Notification as any).permission = 'granted'
+    await act(async () => {
+      await result.current.requestPermission()
+    })
+    expect(mockPostMessage).not.toHaveBeenCalled()
   })
 })
