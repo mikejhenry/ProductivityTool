@@ -26,7 +26,7 @@ function SortableShoppingRow({ item, onToggle }: SortableShoppingRowProps) {
     <li
       ref={setNodeRef}
       style={style}
-      className="flex items-center gap-3 rounded-lg bg-white px-3 py-2.5 shadow-sm dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors"
+      className="flex items-center gap-3 rounded-lg bg-white px-3 py-2.5 shadow-sm dark:bg-slate-800 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
     >
       <span
         {...attributes}
@@ -145,7 +145,7 @@ export default function ShoppingPage() {
                 {done.map(item => (
                   <li
                     key={item.id}
-                    className="flex items-center gap-3 rounded-lg bg-white px-3 py-2.5 shadow-sm dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors"
+                    className="flex items-center gap-3 rounded-lg bg-white px-3 py-2.5 shadow-sm dark:bg-slate-800 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
                   >
                     <input
                       type="checkbox"
