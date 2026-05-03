@@ -48,7 +48,7 @@ export function useNotifications(blocks: TimeBlock[]) {
 
     navigator.serviceWorker.ready.then(reg => {
       swRegRef.current = reg
-      if (Notification.permission === 'granted') {
+      if (Notification.permission === 'granted' && localStorage.getItem('notif-paused') !== 'true') {
         // Schedule via SW interval (works while tab is open)
         if (blocksRef.current.length > 0) {
           reg.active?.postMessage({ type: 'SCHEDULE', blocks: blocksRef.current })
@@ -67,6 +67,7 @@ export function useNotifications(blocks: TimeBlock[]) {
   useEffect(() => {
     if (!swRegRef.current?.active) return
     if (Notification.permission !== 'granted' || blocks.length === 0) return
+    if (localStorage.getItem('notif-paused') === 'true') return
     swRegRef.current.active.postMessage({ type: 'SCHEDULE', blocks })
   }, [blocks])
 
