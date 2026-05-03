@@ -78,8 +78,10 @@ export function useNotifications(blocks: TimeBlock[]) {
     if (result === 'granted') {
       const reg = await navigator.serviceWorker.ready
       swRegRef.current = reg
-      reg.active?.postMessage({ type: 'SCHEDULE', blocks: blocksRef.current })
-      await subscribeToPush(reg)
+      if (localStorage.getItem('notif-paused') !== 'true') {
+        reg.active?.postMessage({ type: 'SCHEDULE', blocks: blocksRef.current })
+        await subscribeToPush(reg)
+      }
     }
     return result
   }

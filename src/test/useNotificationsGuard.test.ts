@@ -5,7 +5,10 @@ import type { TimeBlock } from '../types'
 const mockPostMessage = vi.fn()
 const mockReg = {
   active: { postMessage: mockPostMessage },
-  pushManager: { getSubscription: vi.fn().mockResolvedValue(null) },
+  pushManager: {
+    getSubscription: vi.fn().mockResolvedValue(null),
+    subscribe: vi.fn().mockResolvedValue({ toJSON: vi.fn().mockReturnValue({}) }),
+  },
 }
 
 beforeAll(() => {
