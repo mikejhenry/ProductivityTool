@@ -111,4 +111,16 @@ describe('SettingsPage notifications toggle', () => {
     await user.click(screen.getByRole('switch'))
     expect(mockSetPaused).toHaveBeenCalledWith(false)
   })
+
+  it('toggle is disabled when notifications are not supported', () => {
+    mockState = { permission: 'default', paused: false, enabled: false, supported: false }
+    renderSettings()
+    expect(screen.getByRole('switch')).toBeDisabled()
+  })
+
+  it('shows "Not supported in this browser" when notifications are not supported', () => {
+    mockState = { permission: 'default', paused: false, enabled: false, supported: false }
+    renderSettings()
+    expect(screen.getByText(/not supported in this browser/i)).toBeInTheDocument()
+  })
 })

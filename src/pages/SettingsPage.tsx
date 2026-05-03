@@ -27,6 +27,7 @@ export default function SettingsPage() {
   async function handleToggle() {
     if (permission === 'default') {
       const result = await requestPermission()
+      // Explicitly clear any stale pause flag that may have been set before permission was granted
       if (result === 'granted') setPaused(false)
     } else if (permission === 'granted') {
       setPaused(!paused)
