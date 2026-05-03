@@ -1,13 +1,16 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 const PAUSED_KEY = 'notif-paused'
 const PERMISSION_KEY = 'notif-permission'
 
 export function useNotificationSettings() {
-  const supported =
-    typeof window !== 'undefined' &&
-    'Notification' in window &&
-    'serviceWorker' in navigator
+  const supported = useMemo(
+    () =>
+      typeof window !== 'undefined' &&
+      'Notification' in window &&
+      'serviceWorker' in navigator,
+    []
+  )
 
   const [permission, setPermission] = useState<NotificationPermission>(() =>
     'Notification' in window ? Notification.permission : 'denied'
