@@ -2,7 +2,7 @@ import { renderHook, act } from '@testing-library/react'
 import { useNotificationSettings } from '../hooks/useNotificationSettings'
 
 // jsdom doesn't include Notification — define it once for all tests
-const mockRequestPermission = vi.fn<[], Promise<NotificationPermission>>()
+const mockRequestPermission = vi.fn<() => Promise<NotificationPermission>>()
 
 beforeAll(() => {
   Object.defineProperty(window, 'Notification', {
