@@ -3,36 +3,37 @@ import { buildReminders } from '../lib/buildReminders'
 // Fixed point in time so tests are deterministic
 const NOW = 1_000_000_000_000
 
-const futureBlock = {
+const makeFutureBlock = () => ({
   id: 'b1',
   title: 'Morning standup',
   start_time: new Date(NOW + 60 * 60 * 1000).toISOString(), // 1 hour from NOW
   reminder_minutes: [5, 15],
-}
+})
 
 describe('buildReminders', () => {
   it('creates pre-event reminders with body "Starting soon"', () => {
-    const reminders = buildReminders([futureBlock], NOW)
+    const reminders = buildReminders([makeFutureBlock()], NOW)
     const pre = reminders.filter(r => r.id !== 'b1-start')
     expect(pre).toHaveLength(2)
     expect(pre.every(r => r.body === 'Starting soon')).toBe(true)
   })
 
   it('creates a start-time reminder with body "Starting now"', () => {
-    const reminders = buildReminders([futureBlock], NOW)
+    const reminders = buildReminders([makeFutureBlock()], NOW)
     const start = reminders.find(r => r.id === 'b1-start')
     expect(start).toBeDefined()
     expect(start!.body).toBe('Starting now')
   })
 
   it('start-time reminder fireAt equals block start_time in ms', () => {
-    const reminders = buildReminders([futureBlock], NOW)
+    const block = makeFutureBlock()
+    const reminders = buildReminders([block], NOW)
     const start = reminders.find(r => r.id === 'b1-start')
-    expect(start!.fireAt).toBe(new Date(futureBlock.start_time).getTime())
+    expect(start!.fireAt).toBe(new Date(block.start_time).getTime())
   })
 
   it('start-time reminder has correct blockId and blockTitle', () => {
-    const reminders = buildReminders([futureBlock], NOW)
+    const reminders = buildReminders([makeFutureBlock()], NOW)
     const start = reminders.find(r => r.id === 'b1-start')
     expect(start!.blockId).toBe('b1')
     expect(start!.blockTitle).toBe('Morning standup')
@@ -85,7 +86,7 @@ describe('buildReminders', () => {
       start_time: new Date(NOW + 2 * 60 * 60 * 1000).toISOString(),
       reminder_minutes: [10],
     }
-    const reminders = buildReminders([futureBlock, block2], NOW)
+    const reminders = buildReminders([makeFutureBlock(), block2], NOW)
     const startIds = reminders.filter(r => r.id.endsWith('-start')).map(r => r.blockId)
     expect(startIds).toContain('b1')
     expect(startIds).toContain('b5')

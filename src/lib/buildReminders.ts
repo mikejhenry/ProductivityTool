@@ -16,8 +16,9 @@ export interface ReminderBlock {
 export function buildReminders(blocks: ReminderBlock[], now: number): Reminder[] {
   const reminders: Reminder[] = []
   for (const block of blocks) {
+    const startMs = new Date(block.start_time).getTime()
     for (const mins of block.reminder_minutes) {
-      const fireAt = new Date(block.start_time).getTime() - mins * 60 * 1000
+      const fireAt = startMs - mins * 60 * 1000
       if (fireAt > now) {
         reminders.push({
           id: `${block.id}-${mins}`,
@@ -28,14 +29,13 @@ export function buildReminders(blocks: ReminderBlock[], now: number): Reminder[]
         })
       }
     }
-    const startFireAt = new Date(block.start_time).getTime()
-    if (startFireAt > now) {
+    if (startMs > now) {
       reminders.push({
         id: `${block.id}-start`,
         blockId: block.id,
         blockTitle: block.title,
         body: 'Starting now',
-        fireAt: startFireAt,
+        fireAt: startMs,
       })
     }
   }
