@@ -1,15 +1,10 @@
 /// <reference lib="webworker" />
 declare const self: ServiceWorkerGlobalScope
 
+import { buildReminders, type Reminder } from './lib/buildReminders'
+
 const DB_NAME = 'timeblock-sw'
 const STORE = 'reminders'
-
-interface Reminder {
-  id: string
-  blockId: string
-  blockTitle: string
-  fireAt: number
-}
 
 async function getDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
@@ -62,15 +57,7 @@ self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()))
 
 self.addEventListener('message', async (e: ExtendableMessageEvent) => {
   if (e.data.type === 'SCHEDULE') {
-    const reminders: Reminder[] = []
-    for (const block of e.data.blocks) {
-      for (const mins of (block.reminder_minutes as number[])) {
-        const fireAt = new Date(block.start_time as string).getTime() - mins * 60 * 1000
-        if (fireAt > Date.now()) {
-          reminders.push({ id: `${block.id}-${mins}`, blockId: block.id as string, blockTitle: block.title as string, fireAt })
-        }
-      }
-    }
+    const reminders = buildReminders(e.data.blocks, Date.now())
     await saveReminders(reminders)
   }
   if (e.data.type === 'CANCEL') {
@@ -82,7 +69,7 @@ setInterval(async () => {
   const due = await getDueReminders()
   for (const r of due) {
     await self.registration.showNotification(r.blockTitle, {
-      body: 'Starting soon',
+      body: r.body,
       icon: '/icons/icon-192.png',
       tag: r.id,
       actions: [
