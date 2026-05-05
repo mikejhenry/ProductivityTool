@@ -117,7 +117,6 @@ export default function TodayPage() {
         />
         <TaskChecklist
           tasks={tasks}
-          todayBlocks={todayBlocks}
           onToggle={handleToggle}
           onReorder={ids => reorderTasks(ids).catch(e => console.error('Failed to reorder tasks', e))}
           onAddTask={() => setTaskMode('pick')}

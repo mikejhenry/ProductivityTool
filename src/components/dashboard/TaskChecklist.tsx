@@ -2,11 +2,10 @@ import { DndContext, closestCenter, DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy, arrayMove, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { isSameDay } from '../../lib/dateUtils'
-import { Task, TimeBlock } from '../../types'
+import { Task } from '../../types'
 
 interface Props {
   tasks: Task[]
-  todayBlocks: TimeBlock[]
   onToggle: (taskId: string, done: boolean) => void
   onReorder: (orderedIds: string[]) => void
   onAddTask?: () => void
@@ -56,11 +55,10 @@ function SortableTaskRow({ task, done, onToggle }: SortableTaskRowProps) {
   )
 }
 
-export function TaskChecklist({ tasks, todayBlocks, onToggle, onReorder, onAddTask }: Props) {
+export function TaskChecklist({ tasks, onToggle, onReorder, onAddTask }: Props) {
   const today = new Date().getDay()
   const dailyTasks = tasks.filter(t => t.type === 'daily' && t.repeat_days.includes(today))
-  const linkedTaskIds = new Set(todayBlocks.map(b => b.task_id).filter((id): id is string => id !== null))
-  const linkedFlexible = tasks.filter(t => t.type === 'flexible' && linkedTaskIds.has(t.id))
+  const flexibleTasks = tasks.filter(t => t.type === 'flexible')
 
   const isTaskDone = (task: Task) => {
     if (!task.completed_at) return false
@@ -68,7 +66,7 @@ export function TaskChecklist({ tasks, todayBlocks, onToggle, onReorder, onAddTa
     return true
   }
 
-  const allTasks = [...dailyTasks, ...linkedFlexible]
+  const allTasks = [...dailyTasks, ...flexibleTasks]
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event
